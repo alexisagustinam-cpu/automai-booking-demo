@@ -56,59 +56,73 @@ function leastBusyBarber(date) {
     .sort((a, b) => a.load - b.load)[0].id;
 }
 
-/* Estado de agenda de cada profesional, calculado con datos reales. */
-function availabilityFor(barberId) {
-  const today = dateISO(0);
-  const day = isClosed(today) ? nextOpenDate(0) : today;
-  const free = freeSlotsFor(day, barberId).length;
-
-  if (!free) return { label: 'Agenda completa', cls: 'pill-busy' };
-  if (day === today) return { label: 'Disponible hoy', cls: 'pill-free' };
-  if (day === dateISO(1)) return { label: 'Disponible mañana', cls: 'pill-soon' };
-  return { label: `Disponible ${niceDate(day)}`, cls: 'pill-soon' };
-}
-
 /* ---------- Render del sitio público ---------- */
 
 function renderServices() {
-  $('#serviceList').innerHTML = SERVICES.map((s, i) => `
+  $('#serviceList').innerHTML = SERVICES.map(s => `
     <button class="service-row reveal" data-book-service="${s.id}">
-      <span class="service-num">${String(i + 1).padStart(2, '0')}</span>
-      <span class="service-name">${s.name}</span>
-      <span class="service-desc">${s.desc}</span>
+      <span class="service-main">
+        <span class="service-name">${s.name}</span>
+        <span class="service-desc">${s.desc}</span>
+      </span>
       <span class="service-time">${s.duration} min</span>
       <span class="service-price">${money(s.price)}</span>
-      <span class="service-go" aria-hidden="true"><i class="ph-light ph-arrow-up-right"></i></span>
+      <span class="service-go" aria-hidden="true"><i class="ph-light ph-arrow-right"></i></span>
     </button>
   `).join('');
 }
 
+/* Los nombres de archivo de foto no dependen del id del barbero:
+   así el mapeo foto-persona queda explícito en un solo lugar. */
+const TEAM_PHOTOS = { mateo: 'noble-team-mateo', daniel: 'noble-team-daniel', sebastian: 'noble-team-sebastian' };
+
 function renderTeam() {
   $('#teamGrid').innerHTML = BARBERS.map(b => {
-    const state = availabilityFor(b.id);
+    const photo = TEAM_PHOTOS[b.id] || b.id;
     return `
-      <button class="team-card reveal" data-book-barber="${b.id}" aria-label="Ver disponibilidad de ${b.name}">
+      <button class="team-card reveal" data-book-barber="${b.id}" aria-label="Reservar con ${b.name}">
         <span class="team-photo">
-          <img src="assets/img/${b.id}-1000.webp"
-               srcset="assets/img/${b.id}-420.webp 420w, assets/img/${b.id}-640.webp 640w, assets/img/${b.id}-1000.webp 1000w"
-               sizes="(max-width: 768px) 100vw, 33vw"
-               width="1122" height="1402" loading="lazy" decoding="async"
+          <img src="assets/img/${photo}-1000.webp"
+               srcset="assets/img/${photo}-420.webp 420w, assets/img/${photo}-640.webp 640w, assets/img/${photo}-1000.webp 1000w"
+               sizes="(max-width: 860px) 50vw, 33vw"
+               width="1000" height="1250" loading="lazy" decoding="async"
                alt="${b.name}, barbero de Noble Barber Studio">
         </span>
         <span class="team-body">
-          <span class="team-name">${b.name}</span>
-          <span class="team-meta">
-            ${b.specialty}
-            <span class="team-rating">${b.rating} ★</span>
+          <span>
+            <span class="team-name">${b.name}</span>
+            <span class="team-meta">${b.specialty}</span>
           </span>
-          <span class="team-foot">
-            <span class="pill ${state.cls}"><i class="dot" aria-hidden="true"></i> ${state.label}</span>
-            <span class="link-gold">Ver disponibilidad <i class="ph-light ph-arrow-right" aria-hidden="true"></i></span>
-          </span>
+          <span class="team-go" aria-hidden="true"><i class="ph-light ph-arrow-right"></i></span>
         </span>
       </button>
     `;
   }).join('');
+}
+
+/* ---------- Testimonios ---------- */
+
+const TESTIMONIALS = [
+  { quote: 'Excelente atención, ambiente increíble y un trabajo de primer nivel. Noble es más que una barbería, es una experiencia.', name: 'Andrés R.' },
+  { quote: 'Reservé en menos de un minuto y llegué justo a mi hora. Cero espera, cero llamadas. Así debería ser siempre.', name: 'Diego M.' },
+  { quote: 'El detalle en el corte y la barba se nota. Es el único lugar donde salgo exactamente como pedí.', name: 'Kevin L.' }
+];
+
+let quoteIndex = 0;
+
+function renderQuote() {
+  const t = TESTIMONIALS[quoteIndex];
+  $('#quoteCard').innerHTML = `
+    <div class="quote-body">
+      <p>&ldquo;${t.quote}&rdquo;</p>
+      <div class="quote-stars">★★★★★</div>
+      <div class="quote-attr">— ${t.name}</div>
+    </div>
+    <div class="quote-nav">
+      <button type="button" data-action="quote-prev" aria-label="Testimonio anterior"><i class="ph-light ph-arrow-left" aria-hidden="true"></i></button>
+      <button type="button" data-action="quote-next" aria-label="Testimonio siguiente"><i class="ph-light ph-arrow-right" aria-hidden="true"></i></button>
+    </div>
+  `;
 }
 
 function renderNextSlot() {
@@ -470,19 +484,19 @@ function initMotion() {
 
   gsap.registerPlugin(ScrollTrigger);
 
-  /* Entrada del hero, aproximadamente 1.35s en total. */
+  /* Entrada del hero, aproximadamente 1.2s en total. */
   const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
   intro
     .from('#nav', { opacity: 0, duration: 0.5 }, 0)
-    .from('#heroEyebrow', { opacity: 0, y: 8, duration: 0.5 }, 0.1)
-    .from('.hero-title .line > span', { yPercent: 108, duration: 0.8, stagger: 0.08 }, 0.15)
     .fromTo('#heroPhoto',
       { clipPath: 'inset(0% 0% 100% 0%)' },
-      { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9 }, 0.22)
-    .from('#heroLead', { opacity: 0, y: 10, duration: 0.5 }, 0.62)
-    .from('#heroActions', { opacity: 0, y: 10, duration: 0.5 }, 0.72)
-    .from('#heroStats', { opacity: 0, y: 10, duration: 0.5 }, 0.8)
-    .from('#slotCard', { opacity: 0, y: 12, duration: 0.5 }, 0.86);
+      { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9 }, 0)
+    .from('#heroEyebrow', { opacity: 0, y: 8, duration: 0.5 }, 0.35)
+    .from('.hero-title .line-a, .hero-title .line-b', { opacity: 0, y: 22, duration: 0.6, stagger: 0.1 }, 0.42)
+    .from('#heroLead', { opacity: 0, y: 10, duration: 0.5 }, 0.68)
+    .from('#heroActions', { opacity: 0, y: 10, duration: 0.5 }, 0.78)
+    .from('#slotCard', { opacity: 0, y: 12, duration: 0.5 }, 0.86)
+    .from('.hero-tagline, .hero-side-tag', { opacity: 0, duration: 0.5 }, 0.95);
 
   /* Estado del header sin escuchar scroll a mano. */
   ScrollTrigger.create({
@@ -504,16 +518,6 @@ function initMotion() {
     start: 'bottom 70%',
     end: 'max',
     toggleClass: { targets: '#stickyCta', className: 'show' }
-  });
-
-  /* El ritual resalta el momento que estás leyendo, sin secuestrar el scroll. */
-  $$('.ritual-step').forEach(step => {
-    ScrollTrigger.create({
-      trigger: step,
-      start: 'top 72%',
-      end: 'bottom 45%',
-      toggleClass: { targets: step, className: 'is-active' }
-    });
   });
 
   /* Reveals por sección, en el orden en que se lee. */
@@ -543,6 +547,8 @@ function handleClick(event) {
   if (action === 'close-booking') closeBooking();
   if (action === 'prev-step') goToStep(Math.max(1, flow.step - 1));
   if (action === 'close-menu') closeMenu();
+  if (action === 'quote-prev') { quoteIndex = (quoteIndex - 1 + TESTIMONIALS.length) % TESTIMONIALS.length; renderQuote(); }
+  if (action === 'quote-next') { quoteIndex = (quoteIndex + 1) % TESTIMONIALS.length; renderQuote(); }
 
   if (el.dataset.bookService) openBooking({ service: el.dataset.bookService });
   if (el.dataset.bookBarber) openBooking({ barber: el.dataset.bookBarber });
@@ -588,6 +594,7 @@ function init() {
   renderServices();
   renderTeam();
   renderNextSlot();
+  renderQuote();
   renderStepServices();
   renderStepBarbers();
   renderDates();

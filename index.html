@@ -3,38 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#090909" />
+  <meta name="theme-color" content="#F2EDE5" />
   <title>Noble Barber Studio | Grooming masculino en Ibarra</title>
-  <meta name="description" content="Más que un corte, una mejor versión de ti. Grooming masculino con atención personalizada y reserva sin esperas en Ibarra, Ecuador." />
+  <meta name="description" content="Tu tiempo, tu presencia. Grooming masculino con atención personalizada y reserva sin esperas en Ibarra, Ecuador." />
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/light/style.css">
   <link rel="stylesheet" href="styles.css" />
-  <link rel="preload" as="image" href="assets/img/hero-1600.webp" imagesrcset="assets/img/hero-700.webp 700w, assets/img/hero-1100.webp 1100w, assets/img/hero-1600.webp 1600w" imagesizes="(max-width: 1024px) 100vw, 50vw" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/img/noble-hero-1600.webp" imagesrcset="assets/img/noble-hero-700.webp 700w, assets/img/noble-hero-1100.webp 1100w, assets/img/noble-hero-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
 </head>
 <body>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <header class="nav" id="nav">
     <a class="wordmark" href="#inicio" aria-label="Noble Barber Studio, inicio">
-        <!-- Reservado para /assets/brand/noble-mark.svg: al existir, reemplaza al wordmark-type -->
-      <span class="wordmark-type">
-        <b>NOBLE</b>
-        <span>Barber Studio</span>
-      </span>
+      <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
     </a>
 
     <nav class="nav-links" aria-label="Principal">
+      <a href="#inicio" aria-current="page">Inicio</a>
       <a href="#servicios">Servicios</a>
       <a href="#equipo">Equipo</a>
-      <a href="#experiencia">Experiencia</a>
+      <a href="#estudio">Nuestro Estudio</a>
+      <a href="#contacto">Contacto</a>
     </nav>
 
     <div class="nav-right">
-      <span class="open-state"><i class="dot" aria-hidden="true"></i> Abierto hasta 19:00</span>
+      <span class="nav-place"><i class="ph-light ph-map-pin" aria-hidden="true"></i> Ibarra, Ecuador</span>
       <button class="btn btn-primary btn-sm" data-action="open-booking">
         Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
       </button>
@@ -46,9 +41,7 @@
 
   <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-head">
-      <span class="wordmark">
-        <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
-      </span>
+      <span class="wordmark"><span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span></span>
       <button class="nav-burger" data-action="close-menu" aria-label="Cerrar menú" style="display:grid">
         <i class="ph-light ph-x" aria-hidden="true"></i>
       </button>
@@ -56,7 +49,8 @@
     <nav aria-label="Menú móvil">
       <a href="#servicios" data-action="close-menu">Servicios</a>
       <a href="#equipo" data-action="close-menu">Equipo</a>
-      <a href="#experiencia" data-action="close-menu">Experiencia</a>
+      <a href="#estudio" data-action="close-menu">Estudio</a>
+      <a href="#contacto" data-action="close-menu">Contacto</a>
     </nav>
     <button class="btn btn-primary" data-action="open-booking">
       Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
@@ -64,214 +58,193 @@
   </div>
 
   <main>
-    <!-- Hero -->
+    <!-- Hero: fotografía real a 16:9 completa, sin recortes forzados -->
     <section class="hero" id="inicio">
-      <div class="hero-copy">
-        <span class="eyebrow" id="heroEyebrow">Ibarra · Ecuador</span>
-        <h1 class="serif hero-title" id="heroTitle">
-          <span class="line"><span>Más que un corte,</span></span>
-          <span class="line"><span><em>una mejor versión de ti.</em></span></span>
-        </h1>
-        <p class="lead" id="heroLead">Grooming masculino con atención personalizada y reserva sin esperas.</p>
+      <div class="hero-plate" id="heroPhoto">
+        <picture>
+          <source srcset="assets/img/noble-hero-700.webp 700w, assets/img/noble-hero-1100.webp 1100w, assets/img/noble-hero-1600.webp 1600w"
+                  sizes="100vw" type="image/webp">
+          <img src="assets/img/noble-hero-1600.webp" width="1672" height="940"
+               alt="Barbero cortando el cabello de un cliente en un estudio luminoso con vista a la montaña, Noble Barber Studio"
+               fetchpriority="high" decoding="async">
+        </picture>
 
-        <div class="hero-actions" id="heroActions">
-          <button class="btn btn-primary" data-action="open-booking">
-            Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
-          </button>
-          <a class="btn btn-secondary" href="#servicios">Ver servicios</a>
-        </div>
+        <span class="wordmark on-wine hero-brandmark">
+          <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
+        </span>
 
-      </div>
-
-      <div class="hero-visual">
-        <div class="hero-photo" id="heroPhoto">
-          <picture>
-            <source srcset="assets/img/hero-700.webp 700w, assets/img/hero-1100.webp 1100w, assets/img/hero-1600.webp 1600w"
-                    sizes="(max-width: 1024px) 100vw, 50vw" type="image/webp">
-            <img src="assets/img/hero-1600.webp" width="1672" height="941"
-                 alt="Barbero perfilando la barba de un cliente en el salón de Noble Barber Studio"
-                 fetchpriority="high" decoding="async">
-          </picture>
-
-          <div class="slot-card" id="slotCard">
-            <span class="slot-card-label"><i class="dot" aria-hidden="true"></i> Próximo espacio</span>
-            <strong id="nextSlot">Hoy · 16:30</strong>
+        <div class="hero-copy">
+          <span class="eyebrow" id="heroEyebrow">Ibarra, Ecuador</span>
+          <h1 class="display hero-title" id="heroTitle">
+            <span class="line-a">Tu tiempo.</span><br>
+            <span class="line-b">Tu presencia.</span>
+          </h1>
+          <p class="hero-lead" id="heroLead">Grooming masculino con atención personalizada y una experiencia que va más allá de un corte.</p>
+          <div class="hero-actions" id="heroActions">
             <button class="btn btn-primary" data-action="open-booking">
-              Reservar <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+              Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
             </button>
+            <a class="btn-ghost" href="#servicios">Ver servicios</a>
           </div>
         </div>
-      </div>
 
-      <div class="hero-stats" id="heroStats">
-        <div class="hero-stat">
-          <b>+1.200</b>
-          <span>Citas gestionadas</span>
-        </div>
-        <div class="hero-stat">
-          <b>4.9 <i class="ph-light ph-star" aria-hidden="true"></i></b>
-          <span>Experiencia promedio</span>
-        </div>
-        <div class="hero-stat">
-          <b>0 min</b>
-          <span>Espera con reserva</span>
-        </div>
-      </div>
-    </section>
+        <p class="hero-tagline">Disciplina también es autocuidado.</p>
+        <p class="hero-side-tag">Más que un corte, una mejor versión de ti.</p>
 
-    <!-- The Noble Experience -->
-    <section class="experience" id="experiencia">
-      <div class="experience-inner">
-        <div class="reveal">
-          <span class="eyebrow">The Noble Experience</span>
-          <h2 class="serif">Tu tiempo también forma parte del servicio.</h2>
-          <p class="lead experience-note">No vendemos minutos de silla. Cuidamos la experiencia completa, desde que reservas hasta que te ves en el espejo.</p>
-        </div>
-
-        <div class="experience-list">
-          <article class="experience-item reveal">
-            <b>01</b>
-            <div>
-              <h3>Precisión</h3>
-              <p>Cada detalle importa.</p>
-            </div>
-          </article>
-          <article class="experience-item reveal">
-            <b>02</b>
-            <div>
-              <h3>Tiempo</h3>
-              <p>Reserva. Llega. Te atendemos.</p>
-            </div>
-          </article>
-          <article class="experience-item reveal">
-            <b>03</b>
-            <div>
-              <h3>Consistencia</h3>
-              <p>Tu historial acompaña cada visita.</p>
-            </div>
-          </article>
+        <div class="slot-card" id="slotCard">
+          <span class="slot-card-label"><i class="dot" aria-hidden="true"></i> Próximo turno</span>
+          <strong id="nextSlot">—</strong>
+          <button class="btn btn-primary" data-action="open-booking">
+            Reservar <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+          </button>
         </div>
       </div>
     </section>
 
     <!-- Servicios -->
     <section class="section" id="servicios">
-      <div class="section-head reveal">
-        <span class="eyebrow">Servicios</span>
-        <h2 class="serif">Cuatro formas de verte mejor.</h2>
-        <p class="lead">Duración y precio visibles antes de reservar. Al elegir uno pasas directo a la disponibilidad real del estudio.</p>
+      <div class="section-top reveal">
+        <div>
+          <span class="eyebrow"><span class="eyebrow-num">01</span><span class="eyebrow-rule"></span>Servicios</span>
+        </div>
+        <span class="eyebrow-tail">Corte. Estilo. Disciplina.</span>
       </div>
       <div class="service-list" id="serviceList"></div>
+      <p class="service-foot reveal">
+        <a class="btn-ghost" href="#estudio">Conoce el estudio</a>
+      </p>
     </section>
 
     <!-- Equipo -->
-    <section class="team" id="equipo">
-      <div class="team-inner">
-        <div class="section-head reveal">
-          <span class="eyebrow">Nuestro equipo</span>
-          <h2 class="serif">Elige quién te atiende.</h2>
-          <p class="lead">Cada profesional administra su propia agenda. Reserva con tu barbero de confianza o toma el primero disponible.</p>
+    <section class="section" id="equipo">
+      <div class="section-top reveal">
+        <div>
+          <span class="eyebrow"><span class="eyebrow-num">02</span><span class="eyebrow-rule"></span>Nuestro equipo</span>
         </div>
-        <div class="team-grid" id="teamGrid"></div>
+        <span class="eyebrow-tail">Personas, no solo barberos.</span>
+      </div>
+      <div class="team-grid" id="teamGrid"></div>
+    </section>
+
+    <!-- Cómo funciona -->
+    <section class="section" id="proceso">
+      <div class="section-top reveal">
+        <div>
+          <span class="eyebrow"><span class="eyebrow-num">03</span><span class="eyebrow-rule"></span>Cómo funciona</span>
+        </div>
+        <span class="eyebrow-tail">Un proceso, una mejor versión.</span>
+      </div>
+
+      <div class="how-panel reveal">
+        <div class="how-grid">
+          <article class="how-item">
+            <span class="how-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v11H9l-4 4V5Z" stroke-linejoin="round"/></svg>
+            </span>
+            <h3><span>01.</span>Consulta</h3>
+            <p>Hablamos sobre tu estilo y lo que necesitas.</p>
+          </article>
+          <article class="how-item">
+            <span class="how-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><path d="M8 7.5 20 18M8 16.5 20 6"/></svg>
+            </span>
+            <h3><span>02.</span>Corte</h3>
+            <p>Precisión y técnica en cada detalle.</p>
+          </article>
+          <article class="how-item">
+            <span class="how-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6" stroke-linecap="round"/></svg>
+            </span>
+            <h3><span>03.</span>Acabado</h3>
+            <p>Revisamos, ajustamos, perfeccionamos.</p>
+          </article>
+          <article class="how-item">
+            <span class="how-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.3"/><path d="M5 20c1.2-3.8 4-5.6 7-5.6s5.8 1.8 7 5.6" stroke-linecap="round"/></svg>
+            </span>
+            <h3><span>04.</span>Tu presencia</h3>
+            <p>Listo para lo que sigue.</p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <!-- The Noble Ritual -->
-    <section class="ritual" id="ritual">
-      <div class="ritual-bg" aria-hidden="true">
-        <img src="assets/img/daniel-1000.webp" alt="" loading="lazy" decoding="async">
-      </div>
-
-      <div class="ritual-inner">
-        <div class="ritual-head reveal">
-          <span class="eyebrow">The Noble Ritual</span>
-          <h2 class="serif">Cuatro momentos, una misma intención.</h2>
-          <p class="lead">Así se siente una visita a Noble. El detalle de la reserva lo resolvemos juntos en el siguiente paso.</p>
-          <div class="ritual-foot">
-            <button class="btn btn-primary" data-action="open-booking">
-              Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
-            </button>
-          </div>
+    <!-- Estudio -->
+    <section class="studio" id="estudio">
+      <div class="studio-inner">
+        <div class="studio-photo reveal">
+          <picture>
+            <source srcset="assets/img/noble-studio-700.webp 700w, assets/img/noble-studio-1100.webp 1100w, assets/img/noble-studio-1600.webp 1600w"
+                    sizes="(max-width: 1100px) 100vw, 50vw" type="image/webp">
+            <img src="assets/img/noble-studio-1600.webp" width="1672" height="940" loading="lazy" decoding="async"
+                 alt="Interior de Noble Barber Studio con sillas de barbero y vista a la montaña">
+          </picture>
         </div>
-
-        <div class="ritual-steps" id="ritualSteps">
-          <article class="ritual-step">
-            <b>01</b>
-            <div>
-              <h3>Consult</h3>
-              <p>La conversación.</p>
-            </div>
-          </article>
-          <article class="ritual-step">
-            <b>02</b>
-            <div>
-              <h3>Cut</h3>
-              <p>La precisión.</p>
-            </div>
-          </article>
-          <article class="ritual-step">
-            <b>03</b>
-            <div>
-              <h3>Detail</h3>
-              <p>El acabado.</p>
-            </div>
-          </article>
-          <article class="ritual-step">
-            <b>04</b>
-            <div>
-              <h3>Finish</h3>
-              <p>Tu presencia.</p>
-            </div>
-          </article>
+        <div class="studio-copy reveal">
+          <span class="eyebrow">Nuestro estudio</span>
+          <h2 class="display">Un espacio para el hombre de hoy.</h2>
+          <p>Comodidad, buena energía y atención al detalle. Aquí no solo vienes por un corte, vienes por un momento tuyo.</p>
+          <a class="btn btn-primary" href="#contacto">Conoce nuestro espacio <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
+          <div class="studio-words">
+            <span>Disciplina</span>
+            <span>Estilo</span>
+            <span>Confianza</span>
+            <span>Todos los días</span>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Cierre -->
     <section class="closing">
-      <div class="closing-bg" aria-hidden="true">
-        <img src="assets/img/hero-1100.webp" alt="" loading="lazy" decoding="async">
+      <div class="closing-inner">
+        <div class="closing-photo reveal">
+          <img src="assets/img/noble-closing-900.webp"
+               srcset="assets/img/noble-closing-560.webp 560w, assets/img/noble-closing-900.webp 900w, assets/img/noble-closing-1400.webp 1400w"
+               sizes="(max-width: 860px) 100vw, 30vw"
+               width="1024" height="1365" loading="lazy" decoding="async"
+               alt="Retrato de un cliente en Noble Barber Studio">
+        </div>
+        <div class="closing-copy reveal">
+          <span class="eyebrow"><span class="eyebrow-rule"></span>Tu próxima cita</span>
+          <h2 class="display">Reserva. Llega. Disfruta.</h2>
+          <p>Tu mejor versión te espera.</p>
+          <button class="btn btn-on-wine" data-action="open-booking">
+            Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="closing-side">Un buen día comienza con un buen corte.</div>
       </div>
-      <div class="closing-inner reveal">
-        <div class="closing-rule"></div>
-        <h2 class="serif">Tu próxima cita<br><em>ya tiene hora.</em></h2>
-        <button class="btn btn-primary" data-action="open-booking">
-          Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
-        </button>
-        <p class="closing-note">Ibarra · Ecuador</p>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="section" id="testimonios">
+      <div class="testimonials-inner">
+        <div class="testimonials-copy reveal">
+          <span class="eyebrow">Lo que dicen nuestros clientes</span>
+          <h2 class="display">Más que clientes, una comunidad.</h2>
+        </div>
+        <div class="quote-card reveal" id="quoteCard"></div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="footer-grid">
-      <div class="footer-col">
-        <span class="wordmark">
-          <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
-        </span>
-        <p class="footer-tagline">Más que un corte, una mejor versión de ti.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Horario</h4>
-        <p>Lunes a viernes, 09:00 a 19:00</p>
-        <p>Sábado, 09:00 a 17:00</p>
-        <p>Domingo cerrado</p>
-      </div>
-      <div class="footer-col">
-        <h4>Estudio</h4>
-        <a href="tel:+593984201182">098 420 1182</a>
-        <p>Av. Mariano Acosta y Ricardo Sánchez</p>
-        <p>Ibarra, Ecuador</p>
-      </div>
-      <div class="footer-col">
-        <h4>Sistema</h4>
+  <footer class="footer" id="contacto">
+    <div class="footer-inner">
+      <span class="wordmark"><span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span></span>
+      <nav class="footer-nav" aria-label="Pie de página">
+        <a href="#inicio" aria-current="page">Inicio</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#equipo">Equipo</a>
+        <a href="#estudio">Nuestro Estudio</a>
         <a href="negocio.html">Acceso equipo</a>
-        <a href="#experiencia">La experiencia</a>
+      </nav>
+      <div class="footer-social">
+        <a href="tel:+593984201182" aria-label="Llamar al estudio"><i class="ph-light ph-phone" aria-hidden="true"></i></a>
+        <a href="https://wa.me/593984201182" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp"><i class="ph-light ph-whatsapp-logo" aria-hidden="true"></i></a>
       </div>
-    </div>
-    <div class="footer-note">
-      <span>Noble Barber Studio, demo de producto</span>
-      <span>Reservas, CRM y automatización por AutomAI Labs</span>
+      <span class="footer-meta"><i class="ph-light ph-map-pin" aria-hidden="true"></i> Ibarra, Ecuador</span>
+      <span class="footer-copy">© 2026 Noble Barber Studio</span>
     </div>
   </footer>
 
@@ -286,7 +259,7 @@
   <div class="overlay" id="bookingOverlay" role="dialog" aria-modal="true" aria-labelledby="bookingTitle" aria-hidden="true">
     <div class="booking">
       <aside class="booking-aside">
-        <span class="wordmark">
+        <span class="wordmark on-wine">
           <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
         </span>
         <h2 class="booking-aside-title" id="bookingTitle">Tu cita,<br><em>en cuatro pasos.</em></h2>
