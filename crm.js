@@ -19,6 +19,7 @@ let session = null;
 let activeSection = null;
 let attempts = 0;
 let lockTimer = null;
+let agendaOffset = 0;
 
 /* ---------- Acceso ---------- */
 
@@ -159,6 +160,7 @@ function openSection(id) {
     return;
   }
 
+  if (id === 'agenda') agendaOffset = 0;
   activeSection = id;
   $$('#sideNav button').forEach(b => b.classList.toggle('active', b.dataset.section === id));
   $('#sectionTitle').textContent = section.label;
@@ -430,14 +432,35 @@ function renderMiDia() {
 function renderAgenda() {
   const all = Store.bookings();
   const scope = session.role === 'admin' ? BARBERS : BARBERS.filter(b => b.id === session.barberId);
-  const day = isClosed(dateISO(0)) ? nextOpenDate(0) : dateISO(0);
+  const day = dateISO(agendaOffset);
+  const isToday = agendaOffset === 0;
   const columns = `70px repeat(${scope.length}, minmax(0, 1fr))`;
 
   $('#headActions').innerHTML = `
-    <span class="pill pill-plain">
-      ${niceDate(day)}, ${session.role === 'admin' ? 'todo el estudio' : 'solo tu columna'}
-    </span>
+    <div class="agenda-nav">
+      <button class="icon-btn" type="button" data-agenda-nav="-1" aria-label="Día anterior">
+        <i class="ph-light ph-caret-left" aria-hidden="true"></i>
+      </button>
+      <span class="pill pill-plain agenda-nav-date">
+        ${niceDate(day)}${isToday ? ' · hoy' : ''}, ${session.role === 'admin' ? 'todo el estudio' : 'solo tu columna'}
+      </span>
+      <button class="icon-btn" type="button" data-agenda-nav="1" aria-label="Día siguiente">
+        <i class="ph-light ph-caret-right" aria-hidden="true"></i>
+      </button>
+      ${isToday ? '' : '<button class="btn btn-quiet btn-sm" type="button" data-agenda-today>Hoy</button>'}
+    </div>
   `;
+
+  if (isClosed(day)) {
+    $('#panelBody').innerHTML = `
+      <div class="state">
+        <i class="ph-light ph-moon-stars" aria-hidden="true"></i>
+        <h3>Cerrado</h3>
+        <p>El estudio no abre el ${niceDate(day)}. Usa las flechas para revisar otro día.</p>
+      </div>
+    `;
+    return;
+  }
 
   const rows = AGENDA_HOURS.map(hour => `
     <div class="agenda-row" style="grid-template-columns:${columns}">
@@ -596,6 +619,17 @@ function init() {
   $('#logoutBtn').addEventListener('click', logout);
 
   document.addEventListener('click', event => {
+    const navBtn = event.target.closest('[data-agenda-nav]');
+    if (navBtn && session && activeSection === 'agenda') {
+      agendaOffset = Math.max(-14, Math.min(30, agendaOffset + Number(navBtn.dataset.agendaNav)));
+      renderAgenda();
+      return;
+    }
+    if (event.target.closest('[data-agenda-today]') && session && activeSection === 'agenda') {
+      agendaOffset = 0;
+      renderAgenda();
+      return;
+    }
     const target = event.target.closest('[data-section]');
     if (target && session) {
       openSection(target.dataset.section);

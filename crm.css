@@ -5,10 +5,10 @@
    ========================================================= */
 
 :root {
-  --canvas: #F2EFE8;
+  --canvas: var(--paper);
   --card: #FFFFFF;
-  --card-line: rgba(23, 22, 20, 0.09);
-  --side-line: rgba(212, 193, 154, 0.12);
+  --card-line: rgba(27, 23, 18, 0.09);
+  --side-line: rgba(242, 237, 229, 0.12);
   --r-panel: 12px;
 }
 
@@ -48,7 +48,7 @@ body.crm-body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(160deg, rgba(9, 9, 9, 0.72), rgba(9, 9, 9, 0.94));
+  background: linear-gradient(160deg, rgba(27, 23, 18, 0.72), rgba(27, 23, 18, 0.94));
 }
 
 .login-visual > * { position: relative; z-index: 1; }
@@ -56,7 +56,7 @@ body.crm-body {
 .login-visual h1 {
   font-family: var(--serif);
   font-size: clamp(32px, 3.4vw, 50px);
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.12;
   color: var(--noble-bone);
   margin: 0;
@@ -91,7 +91,7 @@ body.crm-body {
   margin: 0 0 var(--s2);
   font-family: var(--serif);
   font-size: 34px;
-  font-weight: 400;
+  font-weight: 700;
   color: var(--ink);
 }
 
@@ -106,10 +106,10 @@ body.crm-body {
   margin-bottom: var(--s5);
   padding: var(--s3) var(--s4);
   border-radius: var(--r-card);
-  background: rgba(156, 59, 46, 0.08);
-  border: 1px solid rgba(156, 59, 46, 0.24);
+  background: rgba(78, 18, 22, 0.08);
+  border: 1px solid rgba(78, 18, 22, 0.24);
   font-size: 13px;
-  color: #7E2E23;
+  color: var(--wine);
 }
 
 .login-alert.show { display: flex; }
@@ -165,14 +165,14 @@ body.crm-body {
 .side-user {
   padding: var(--s4);
   border-radius: var(--r-card);
-  background: rgba(212, 193, 154, 0.06);
+  background: rgba(242, 237, 229, 0.06);
   border: 1px solid var(--side-line);
   display: grid;
   gap: 2px;
 }
 
 .side-user strong { font-size: 14px; font-weight: 600; color: var(--noble-bone); }
-.side-user span { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--noble-gold); }
+.side-user span { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--wine-glow); }
 
 .side-nav { display: grid; gap: 2px; }
 
@@ -191,15 +191,15 @@ body.crm-body {
 }
 
 .side-nav button i:first-child { font-size: 19px; }
-.side-nav button:hover:not(.locked) { background: rgba(212, 193, 154, 0.07); color: var(--noble-bone); }
+.side-nav button:hover:not(.locked) { background: rgba(242, 237, 229, 0.08); color: var(--noble-bone); }
 
 .side-nav button.active {
-  background: rgba(180, 147, 82, 0.14);
+  background: rgba(214, 91, 77, 0.16);
   color: var(--noble-bone);
   box-shadow: inset 2px 0 0 var(--noble-gold);
 }
 
-.side-nav button.locked { color: rgba(152, 145, 136, 0.5); cursor: not-allowed; }
+.side-nav button.locked { color: rgba(242, 237, 229, 0.32); cursor: not-allowed; }
 .side-nav button.locked .lock { margin-left: auto; font-size: 15px; }
 
 .side-foot { margin-top: auto; display: grid; gap: var(--s2); }
@@ -225,7 +225,7 @@ body.crm-body {
   margin: 0;
   font-family: var(--serif);
   font-size: 34px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.1;
   color: var(--ink);
 }
@@ -288,7 +288,7 @@ body.crm-body {
   margin: 0;
   font-family: var(--serif);
   font-size: 21px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--ink);
 }
 
@@ -312,9 +312,30 @@ body.crm-body {
 .appointment-who strong { display: block; font-size: 14px; font-weight: 600; color: var(--ink); }
 .appointment-who small { font-size: 13px; color: var(--ink-muted); }
 
+/* Base que faltaba: los modificadores de abajo solo ponían color y
+   borde, sin forma de pastilla (padding, radio, fondo recortado). */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 .pill-ok { color: var(--status-ink); border-color: rgba(79, 99, 82, 0.3); background: rgba(79, 99, 82, 0.06); }
-.pill-wait { color: var(--gold-ink); border-color: rgba(138, 110, 50, 0.3); background: rgba(138, 110, 50, 0.07); }
+.pill-wait { color: var(--gold-ink); border-color: rgba(78, 18, 22, 0.3); background: rgba(78, 18, 22, 0.07); }
 .pill-plain { color: var(--ink-muted); border-color: var(--card-line); }
+
+/* ---------- Navegación de fecha (Agenda) ---------- */
+
+.agenda-nav { display: flex; align-items: center; gap: var(--s2); }
+.agenda-nav .icon-btn { width: 38px; height: 38px; border: 1px solid var(--card-line); }
+.agenda-nav .icon-btn:hover { background: var(--paper-raised); color: var(--ink); }
+.agenda-nav-date { font-family: var(--mono); text-transform: none; letter-spacing: 0; }
 
 /* Ocupación */
 .gauge { display: flex; align-items: center; gap: var(--s5); }
@@ -369,10 +390,10 @@ body.crm-body {
   width: 100%;
   min-height: 3px;
   border-radius: 4px 4px 0 0;
-  background: rgba(180, 147, 82, 0.28);
+  background: rgba(78, 18, 22, 0.22);
 }
 
-.bar-col.peak i { background: var(--noble-gold); }
+.bar-col.peak i { background: var(--wine); }
 .bar-col small { font-family: var(--mono); font-size: 11px; color: var(--ink-muted); text-align: center; }
 
 .bars-foot {
@@ -415,7 +436,7 @@ body.crm-body {
 .agenda-row { display: grid; min-width: 620px; border-top: 1px solid var(--card-line); }
 .agenda-row:first-child { border-top: 0; }
 
-.agenda-row.head { position: sticky; top: 0; background: #FBF9F5; z-index: 1; }
+.agenda-row.head { position: sticky; top: 0; background: var(--paper-raised); z-index: 1; }
 
 .agenda-row.head span {
   padding: var(--s4);
@@ -446,8 +467,8 @@ body.crm-body {
 .agenda-block {
   padding: var(--s3);
   border-radius: var(--r-card);
-  background: rgba(180, 147, 82, 0.1);
-  box-shadow: inset 2px 0 0 var(--noble-gold);
+  background: rgba(78, 18, 22, 0.08);
+  box-shadow: inset 2px 0 0 var(--wine);
   display: grid;
   align-content: center;
   gap: 2px;
@@ -492,13 +513,13 @@ table.clients th {
   font-size: 12px;
   font-weight: 600;
   color: var(--ink-muted);
-  background: #FBF9F5;
+  background: var(--paper-raised);
   border-bottom: 1px solid var(--card-line);
 }
 
 table.clients td { padding: var(--s4) var(--s5); border-bottom: 1px solid var(--card-line); font-size: 14px; }
 table.clients tr:last-child td { border-bottom: 0; }
-table.clients tbody tr:hover td { background: #FBF9F5; }
+table.clients tbody tr:hover td { background: var(--paper-raised); }
 table.clients .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
 .client-cell { display: flex; align-items: center; gap: var(--s3); }
@@ -510,7 +531,7 @@ table.clients .num { font-family: var(--mono); font-variant-numeric: tabular-num
   height: 36px;
   flex-shrink: 0;
   border-radius: var(--r-pill);
-  background: rgba(180, 147, 82, 0.14);
+  background: rgba(78, 18, 22, 0.1);
   font-family: var(--mono);
   font-size: 11px;
   color: var(--gold-ink);
@@ -538,7 +559,7 @@ table.clients .num { font-family: var(--mono); font-variant-numeric: tabular-num
   margin: 0 0 2px;
   font-family: var(--serif);
   font-size: 21px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--ink);
 }
 
@@ -564,7 +585,7 @@ table.clients .num { font-family: var(--mono); font-variant-numeric: tabular-num
   margin: 0;
   font-family: var(--serif);
   font-size: 26px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--ink);
 }
 
@@ -611,6 +632,10 @@ table.clients .num { font-family: var(--mono); font-variant-numeric: tabular-num
 
   .panel-head { position: static; padding: var(--s5) var(--s4); }
   .panel-head h2 { font-size: 27px; }
+  .panel-date { display: none; }
+  .panel-head-actions { width: 100%; }
+  .agenda-nav { width: 100%; flex-wrap: wrap; }
+  .agenda-nav-date { order: 1; flex: 1 0 100%; text-align: center; }
   .panel-body { padding: var(--s5) var(--s4) var(--s7); }
   .metrics { grid-template-columns: 1fr; gap: var(--s3); }
   .gauge { flex-direction: column; align-items: flex-start; }

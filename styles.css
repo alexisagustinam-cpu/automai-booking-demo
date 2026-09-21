@@ -53,20 +53,18 @@
   --nav-h: 76px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Compatibilidad con negocio.html y crm.css: ese panel no es parte de
-     este rediseño y sigue con su propia paleta oscura/dorada anterior.
-     Como comparte este archivo para los tokens, se preservan aquí con
-     sus valores exactos de antes para que no se rompa visualmente. */
-  --noble-black: #090909;
-  --noble-obsidian: #12110F;
-  --noble-gold: #B49352;
-  --noble-champagne: #D4C19A;
-  --noble-bone: #EEE9DF;
-  --noble-gray: #989188;
+  /* Panel del negocio (negocio.html/crm.css): mismos tokens del
+     rediseño — tinta en vez de negro puro, vino en vez de dorado. */
+  --noble-black: var(--ink);
+  --noble-obsidian: var(--ink);
+  --noble-gold: var(--wine-bright);
+  --noble-champagne: var(--wine-glow);
+  --noble-bone: var(--paper);
+  --noble-gray: rgba(242, 237, 229, 0.6);
   --ink-muted: #6B665E;
-  --gold-ink: #8A6E32;
+  --gold-ink: var(--wine);
   --status-ink: #4F6352;
-  --serif: "Cormorant Garamond", Georgia, serif;
+  --serif: 'Zodiak', Georgia, serif;
 
   /* crm.css usa esta escala de espaciado en unas 90 declaraciones
      (padding, gap, margin). Sin ella, todo el panel queda sin aire. */
@@ -82,22 +80,15 @@
   --s10: 128px;
 }
 
-/* El sitio público usa Supreme; el panel del negocio sigue con Manrope,
-   que negocio.html ya carga por su cuenta. */
-.crm-body { font-family: "Manrope", system-ui, sans-serif; }
+/* El panel del negocio ahora comparte tipografía e identidad con el
+   sitio público: Supreme para interfaz, burdeos como único acento. */
+.crm-body { font-family: var(--sans); }
 
-/* .btn-primary/.btn-secondary son compartidas con el sitio público y
-   ahora son burdeos ahí. El panel del negocio conserva su dorado original. */
-.crm-body .btn-primary { background: var(--noble-gold); color: var(--noble-black); }
-.crm-body .btn-primary:hover { background: var(--noble-champagne); }
-.crm-body .btn-secondary { background: transparent; border-color: rgba(212, 193, 154, 0.28); color: var(--noble-bone); }
-.crm-body .btn-secondary:hover { border-color: var(--noble-champagne); background: rgba(212, 193, 154, 0.05); }
-
-/* El wordmark por defecto ahora asume texto oscuro sobre papel.
-   En el panel vive sobre fondos oscuros (sidebar, foto de login),
-   así que aquí vuelve a su tratamiento claro original (5.3:1). */
-.crm-body .wordmark-type b { color: var(--noble-bone); }
-.crm-body .wordmark-type span { color: rgba(238, 233, 223, 0.55); }
+/* .btn-primary hereda el burdeos del sitio público sin overrides. Solo
+   la barra lateral (fondo oscuro) necesita su propia variante clara de
+   btn-secondary; el resto del panel (canvas claro) usa la de por defecto. */
+.side .btn-secondary { background: transparent; border-color: rgba(242, 237, 229, 0.28); color: var(--paper); }
+.side .btn-secondary:hover { border-color: var(--wine-glow); background: rgba(242, 237, 229, 0.06); }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
