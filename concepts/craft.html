@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#E8E2D8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Concepto B, craft | Noble</title>
+  <link rel="stylesheet" href="concepts.css" />
+  <link rel="stylesheet" href="craft.css" />
+</head>
+<body class="c-craft" data-concept="craft">
+  <div class="cf-grain" aria-hidden="true"></div>
+
+  <header class="cf-head">
+    <div>
+      <div class="cf-logo">Noble</div>
+      <span>Barber Studio / Ibarra</span>
+    </div>
+    <nav>
+      <a href="#servicios">Servicios</a>
+      <a href="#">El oficio</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Pliego impreso: márgenes desiguales, nota al margen y la
+         plancha fotográfica montada sobre el papel, a 16:9 completo. -->
+    <section class="cf-sheet">
+      <aside class="cf-note">
+        <span class="mono">Próximo turno</span>
+        <b id="cfSlot">—</b>
+        <span class="cut cut-draw" aria-hidden="true"></span>
+        <p>Lunes a viernes de 09:00 a 19:00. Sábado hasta las 17:00.</p>
+      </aside>
+
+      <div class="cf-body">
+        <h1 class="display">Más que un corte, <em>oficio.</em></h1>
+        <p class="cf-lede">Trabajamos con tiempo medido y manos que conocen el detalle. Reservas la hora y la hora es tuya.</p>
+
+        <div class="cf-actions">
+          <button class="cf-btn">
+            Reservar cita
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M2 8h11M9.5 4.5 13 8l-3.5 3.5"/>
+            </svg>
+          </button>
+          <a class="cf-link" href="#servicios">Ver servicios</a>
+        </div>
+
+        <figure class="cf-plate reveal-clip">
+          <div class="cf-plate-shot">
+            <img src="../assets/img/hero-1600.webp" width="1672" height="941"
+                 alt="Barbero perfilando la barba de un cliente en Noble Barber Studio"
+                 fetchpriority="high">
+          </div>
+          <figcaption>
+            <span>Fig. 01</span>
+            <span>El estudio, Ibarra</span>
+            <span>16:9</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="cf-services" id="servicios">
+      <div class="cf-services-head">
+        <span class="mono">La lista</span>
+        <h2 class="display">Cuatro trabajos</h2>
+      </div>
+      <div id="cfRows"></div>
+    </section>
+  </main>
+
+  <nav class="switcher" aria-label="Conceptos">
+    <span>Concepto</span>
+    <a href="editorial.html">A Editorial</a>
+    <a href="craft.html" aria-current="page">B Craft</a>
+    <a href="club.html">C Club</a>
+  </nav>
+
+  <script src="../data.js"></script>
+  <script src="concepts.js"></script>
+</body>
+</html>

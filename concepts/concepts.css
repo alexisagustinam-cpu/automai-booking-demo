@@ -1,0 +1,171 @@
+/* =========================================================
+   NOBLE, zona de exploración visual
+   Base compartida por los tres conceptos: paleta, tipografía,
+   reset y la primitiva gráfica Cut Line.
+   Cada concepto añade su propia hoja encima.
+   ========================================================= */
+
+/* --- Concepto A, editorial --- */
+@font-face { font-family:'Cabinet Grotesk'; src:url('../assets/fonts/cabinet-grotesk-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Cabinet Grotesk'; src:url('../assets/fonts/cabinet-grotesk-800.woff2') format('woff2'); font-weight:800; font-display:swap; }
+@font-face { font-family:'Supreme'; src:url('../assets/fonts/supreme-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Supreme'; src:url('../assets/fonts/supreme-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+
+/* --- Concepto B, craft --- */
+@font-face { font-family:'Neco'; src:url('../assets/fonts/neco-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Neco'; src:url('../assets/fonts/neco-400-italic.woff2') format('woff2'); font-weight:400; font-style:italic; font-display:swap; }
+@font-face { font-family:'Neco'; src:url('../assets/fonts/neco-700.woff2') format('woff2'); font-weight:700; font-display:swap; }
+@font-face { font-family:'Synonym'; src:url('../assets/fonts/synonym-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Synonym'; src:url('../assets/fonts/synonym-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+@font-face { font-family:'Azeret Mono'; src:url('../assets/fonts/azeret-mono-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+
+/* --- Concepto C, club --- */
+@font-face { font-family:'Technor'; src:url('../assets/fonts/technor-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Technor'; src:url('../assets/fonts/technor-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+@font-face { font-family:'General Sans'; src:url('../assets/fonts/general-sans-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'General Sans'; src:url('../assets/fonts/general-sans-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+@font-face { font-family:'General Sans'; src:url('../assets/fonts/general-sans-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+
+/* --- Datos, compartida por A y C --- */
+@font-face { font-family:'Tabular'; src:url('../assets/fonts/tabular-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+@font-face { font-family:'Tabular'; src:url('../assets/fonts/tabular-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+
+:root {
+  /* Paleta tomada de la fotografía */
+  --ink: #0A0A09;
+  --warm-black: #141210;
+  --walnut: #2A211A;
+  --paper: #E8E2D8;
+  --metal: #92754D;          /* latón envejecido. 4.6:1 sobre ink */
+  --ash: #8B8881;            /* 5.6:1 sobre ink */
+
+  /* Sobre papel el latón solo alcanza 3.4:1, así que el texto
+     en superficie clara usa esta variante oscurecida (5.4:1). */
+  --metal-ink: #6E5636;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-cut: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+h1, h2, h3, p { margin: 0; }
+
+:focus-visible { outline: 1.5px solid currentColor; outline-offset: 4px; }
+
+/* =========================================================
+   THE CUT LINE
+   Una línea fina que mide, separa y avanza. Se dibuja desde
+   el origen con scaleX para que se lea como un corte, no como
+   un fundido.
+   ========================================================= */
+
+.cut {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.22;
+  transform-origin: left center;
+}
+
+/* La marca que viaja sobre la línea al pasar el cursor */
+.cut::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: width 0.55s var(--ease-cut), opacity 0.2s linear;
+}
+
+.cut-host:hover .cut::after { width: 100%; opacity: 1; }
+
+/* Estado inicial del dibujado, lo activa concepts.js */
+.cut-draw { transform: scaleX(0); }
+.cut-draw.is-cut { transform: scaleX(1); transition: transform 0.9s var(--ease-cut); }
+
+/* =========================================================
+   Gestos de revelado. Uno por concepto, no un fundido global.
+   ========================================================= */
+
+/* A: la tipografía sale de detrás de una máscara */
+.reveal-mask > span {
+  display: block;
+  clip-path: inset(0 0 105% 0);
+  transform: translateY(0.14em);
+  transition: clip-path 0.95s var(--ease-cut), transform 0.95s var(--ease-cut);
+}
+
+.reveal-mask.is-in > span { clip-path: inset(0 0 -12% 0); transform: none; }
+.reveal-mask.is-in > span:nth-child(2) { transition-delay: 0.1s; }
+
+/* B: la fotografía se descubre como una cortina.
+   El recorte va en un hijo, nunca en el elemento observado: un elemento
+   con clip-path a altura cero no intersecta y el observer no lo ve,
+   así que jamás se revelaría. */
+.reveal-clip > * { clip-path: inset(0 0 100% 0); transition: clip-path 1.05s var(--ease-cut); }
+.reveal-clip.is-in > * { clip-path: inset(0 0 0 0); }
+
+/* C: los elementos entran en secuencia corta */
+.reveal-seq > * {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
+.reveal-seq > *.is-in { opacity: 1; transform: none; }
+
+/* =========================================================
+   Barra de navegación entre conceptos, solo para revisión
+   ========================================================= */
+
+.switcher {
+  position: fixed;
+  z-index: 90;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(10, 10, 9, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(232, 226, 216, 0.16);
+  font-family: 'Tabular', ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--ash);
+}
+
+.switcher a { padding: 7px 13px; transition: background-color 0.2s linear, color 0.2s linear; }
+.switcher a:hover { color: var(--paper); }
+.switcher a[aria-current="page"] { background: var(--paper); color: var(--ink); }
+.switcher span { padding: 0 9px 0 6px; color: rgba(139, 136, 129, 0.6); letter-spacing: 0.08em; }
+
+@media (max-width: 520px) {
+  .switcher { font-size: 10px; bottom: 10px; }
+  .switcher a { padding: 6px 9px; }
+  .switcher span { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cut-draw { transform: scaleX(1) !important; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

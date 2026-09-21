@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0A0A09" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Concepto C, club | Noble</title>
+  <link rel="stylesheet" href="concepts.css" />
+  <link rel="stylesheet" href="club.css" />
+</head>
+<body class="c-club" data-concept="club">
+
+  <header class="cl-head">
+    <div>
+      <div class="cl-logo">NOBLE</div>
+      <span>Barber Studio / Ibarra</span>
+    </div>
+    <nav>
+      <a href="#servicios">Servicios</a>
+      <a href="#">El club</a>
+    </nav>
+    <span class="cl-state"><i aria-hidden="true"></i> Abierto</span>
+  </header>
+
+  <main>
+    <section class="cl-hero">
+      <div class="cl-shot">
+        <img src="../assets/img/hero-1600.webp" width="1672" height="941"
+             alt="Barbero perfilando la barba de un cliente en Noble Barber Studio"
+             fetchpriority="high">
+      </div>
+
+      <div class="cl-copy">
+        <h1 class="display">Tu tiempo.<br>Tu presencia.</h1>
+        <p>Grooming masculino en Ibarra. La agenda está abierta: elige la hora y queda apartada.</p>
+        <div class="cl-cta">
+          <button class="cl-btn">
+            Reservar cita
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M2 8h11M9.5 4.5 13 8l-3.5 3.5"/>
+            </svg>
+          </button>
+          <a class="cl-btn-line" href="#servicios">Servicios</a>
+        </div>
+      </div>
+
+      <!-- Disponibilidad real integrada en el borde de la imagen -->
+      <div class="cl-avail">
+        <div class="cl-next">
+          <small>Próximo turno</small>
+          <b id="clSlot">--:--</b>
+          <em id="clSlotDay">—</em>
+        </div>
+        <div class="cl-strip reveal-seq" id="clStrip"></div>
+      </div>
+    </section>
+
+    <div class="cl-meta" id="clMeta"></div>
+
+    <section class="cl-services" id="servicios">
+      <div class="cl-services-head">
+        <h2 class="display">Servicios</h2>
+        <span>Duración / precio</span>
+      </div>
+      <div id="clRows"></div>
+    </section>
+  </main>
+
+  <nav class="switcher" aria-label="Conceptos">
+    <span>Concepto</span>
+    <a href="editorial.html">A Editorial</a>
+    <a href="craft.html">B Craft</a>
+    <a href="club.html" aria-current="page">C Club</a>
+  </nav>
+
+  <script src="../data.js"></script>
+  <script src="concepts.js"></script>
+</body>
+</html>

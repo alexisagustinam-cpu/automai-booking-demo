@@ -1,0 +1,275 @@
+/* =========================================================
+   CONCEPTO C, MODERN CLUB
+   Nocturno. Tinta, negro cálido y latón. La disponibilidad real
+   es parte del lenguaje visual, no un adorno.
+   Technor + General Sans + Tabular.
+   ========================================================= */
+
+.c-club {
+  --gut: clamp(18px, 4vw, 56px);
+  --line: rgba(232, 226, 216, 0.14);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'General Sans', system-ui, sans-serif;
+}
+
+.c-club .display { font-family: 'Technor', sans-serif; font-weight: 600; line-height: 0.94; letter-spacing: -0.02em; }
+.c-club .data {
+  font-family: 'Tabular', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+}
+
+/* ---------- Cabecera con estado del local ---------- */
+
+.cl-head {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 20px var(--gut);
+  border-bottom: 1px solid var(--line);
+}
+
+.cl-logo {
+  font-family: 'Technor', sans-serif;
+  font-weight: 600;
+  font-size: clamp(21px, 2vw, 27px);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.cl-logo + span {
+  display: block;
+  margin-top: 5px;
+  font-family: 'Tabular', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--metal);
+}
+
+.cl-head nav { display: flex; gap: 24px; margin-left: auto; font-size: 14px; color: var(--ash); }
+.cl-head nav a:hover { color: var(--paper); }
+
+.cl-state {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 13px;
+  border: 1px solid var(--line);
+  font-family: 'Tabular', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+
+.cl-state i { width: 5px; height: 5px; border-radius: 50%; background: #6F8A6F; }
+
+/* ---------- Hero ---------- */
+
+.cl-hero { position: relative; }
+
+/* Plancha cinematográfica: mantiene 16:9 sin recortar, pero acotada en
+   altura para que la tira de disponibilidad entre en pantalla. Al limitar
+   por alto es el ancho el que cede, así que la composición no se pierde. */
+.cl-shot {
+  position: relative;
+  width: 100%;
+  max-width: calc((100dvh - 196px) * 16 / 9);
+  margin-inline: auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+.cl-shot img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 44%; }
+
+/* Velo desde abajo y desde la izquierda, donde la foto ya es oscura */
+.cl-shot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(10, 10, 9, 0.96) 0%, rgba(10, 10, 9, 0.35) 34%, rgba(10, 10, 9, 0) 62%),
+    linear-gradient(100deg, rgba(10, 10, 9, 0.72), rgba(10, 10, 9, 0) 46%);
+}
+
+.cl-copy {
+  position: absolute;
+  z-index: 2;
+  left: var(--gut);
+  top: clamp(34px, 7vw, 82px);
+  width: min(46%, 640px);
+}
+
+.cl-copy h1 { font-size: clamp(34px, 5.2vw, 78px); margin-bottom: 16px; }
+.cl-copy p { max-width: 32ch; font-size: clamp(14px, 1.1vw, 16px); color: rgba(232, 226, 216, 0.72); }
+
+.cl-cta { display: flex; align-items: center; gap: 14px; margin-top: clamp(20px, 3vw, 30px); }
+
+/* Botón con filete de latón, sin relleno pesado */
+.cl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 22px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--paper);
+  transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+
+.cl-btn:hover { background: var(--metal); color: var(--ink); }
+.cl-btn svg { width: 15px; height: 15px; transition: transform 0.3s var(--ease); }
+.cl-btn:hover svg { transform: translateX(3px); }
+
+.cl-btn-line {
+  display: inline-flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  font-size: 14px;
+  color: var(--paper);
+  border: 1px solid var(--line);
+  transition: border-color 0.3s var(--ease);
+}
+.cl-btn-line:hover { border-color: var(--metal); }
+
+/* La disponibilidad vive dentro de la imagen, pegada a su borde */
+.cl-avail {
+  position: absolute;
+  z-index: 3;
+  left: var(--gut);
+  right: var(--gut);
+  bottom: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: clamp(18px, 3vw, 40px);
+}
+
+.cl-next { padding-bottom: 14px; }
+.cl-next small { display: block; font-family: 'Tabular', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--metal); }
+.cl-next b { font-family: 'Tabular', monospace; font-size: clamp(30px, 3.6vw, 52px); font-weight: 400; line-height: 1; display: block; margin-top: 6px; }
+.cl-next em { font-style: normal; font-size: 12px; color: var(--ash); display: block; margin-top: 6px; }
+
+.cl-strip {
+  display: flex;
+  gap: 1px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 14px;
+}
+.cl-strip::-webkit-scrollbar { display: none; }
+
+.cl-time {
+  flex: 0 0 auto;
+  min-width: 92px;
+  padding: 12px 14px 11px;
+  text-align: left;
+  background: rgba(10, 10, 9, 0.66);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(3px);
+  transition: background-color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.cl-time small { display: block; font-family: 'Tabular', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ash); }
+.cl-time b { font-family: 'Tabular', monospace; font-size: 17px; font-weight: 400; display: block; margin-top: 4px; }
+.cl-time:hover { background: rgba(146, 117, 77, 0.22); border-color: var(--metal); }
+.cl-time.is-next { border-color: var(--metal); background: rgba(146, 117, 77, 0.16); }
+
+/* ---------- Métrica de sala ---------- */
+
+.cl-meta {
+  display: flex;
+  gap: clamp(28px, 5vw, 64px);
+  padding: 20px var(--gut);
+  border-bottom: 1px solid var(--line);
+}
+
+.cl-meta span { display: flex; align-items: baseline; gap: 10px; }
+.cl-meta i { font-style: normal; font-family: 'Tabular', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ash); }
+.cl-meta b { font-family: 'Tabular', monospace; font-size: 17px; font-weight: 500; }
+
+/* ---------- Servicios técnicos ---------- */
+
+.cl-services { padding: clamp(50px, 7vw, 92px) var(--gut) clamp(74px, 9vw, 120px); }
+
+.cl-services-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 26px;
+  margin-bottom: clamp(24px, 3vw, 38px);
+}
+
+.cl-services-head h2 { font-size: clamp(22px, 2.3vw, 31px); }
+.cl-services-head span { font-family: 'Tabular', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--metal); }
+
+.cl-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 250px) 1fr 82px 62px;
+  align-items: center;
+  gap: clamp(14px, 2.4vw, 32px);
+  padding: 19px 0;
+  text-align: left;
+  border-top: 1px solid var(--line);
+  color: var(--paper);
+  transition: background-color 0.3s var(--ease);
+}
+
+.cl-row:last-child { border-bottom: 1px solid var(--line); }
+.cl-row:hover { background: rgba(232, 226, 216, 0.035); }
+
+.cl-row-num { font-family: 'Tabular', monospace; font-size: 11px; color: var(--metal); }
+.cl-row-name { font-family: 'Technor', sans-serif; font-weight: 400; font-size: clamp(18px, 1.8vw, 24px); }
+
+/* La Cut Line mide la duración del servicio */
+.cl-row-bar { height: 1px; background: rgba(232, 226, 216, 0.14); position: relative; }
+.cl-row-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--metal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--ease-cut);
+}
+.cl-row:hover .cl-row-bar i, .cl-row.is-measured .cl-row-bar i { transform: scaleX(1); }
+
+.cl-row-time { font-family: 'Tabular', monospace; font-size: 15px; font-variant-numeric: tabular-nums; }
+.cl-row-time em { font-style: normal; font-size: 10px; color: var(--ash); margin-left: 4px; }
+.cl-row-price { font-family: 'Tabular', monospace; font-size: 17px; font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- Móvil: la disponibilidad se separa de la imagen ---------- */
+
+@media (max-width: 900px) {
+  .cl-head nav, .cl-state { display: none; }
+
+  .cl-shot { aspect-ratio: 16 / 9; }
+  .cl-shot::after { background: linear-gradient(to top, rgba(10,10,9,.98) 4%, rgba(10,10,9,.2) 52%, rgba(10,10,9,0) 78%); }
+
+  .cl-copy { position: static; width: auto; padding: 22px var(--gut) 0; }
+  .cl-copy h1 { font-size: clamp(32px, 10vw, 44px); }
+  .cl-copy p { max-width: 40ch; }
+
+  /* La tira de turnos sale de la foto y se desplaza en horizontal */
+  .cl-avail {
+    position: static;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 20px var(--gut) 0;
+  }
+  .cl-next { padding-bottom: 0; display: flex; align-items: baseline; gap: 12px; }
+  .cl-next b { font-size: 30px; margin: 0; }
+  .cl-next em { display: none; }
+  .cl-strip { margin: 0 calc(var(--gut) * -1); padding: 0 var(--gut) 4px; }
+
+  .cl-meta { gap: 20px; flex-wrap: wrap; margin-top: 22px; }
+
+  .cl-row { grid-template-columns: 34px 1fr auto; gap: 10px 14px; padding: 16px 0; }
+  .cl-row-bar { display: none; }
+  .cl-row-time { grid-column: 2; font-size: 12px; color: var(--ash); }
+  .cl-row-price { grid-row: 1; grid-column: 3; }
+}

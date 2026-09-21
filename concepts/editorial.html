@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#E8E2D8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Concepto A, editorial | Noble</title>
+  <link rel="stylesheet" href="concepts.css" />
+  <link rel="stylesheet" href="editorial.css" />
+</head>
+<body class="c-editorial" data-concept="editorial">
+
+  <header class="ed-masthead">
+    <div>
+      <div class="ed-logo">Noble</div>
+      <div class="ed-descriptor">Barber Studio / Ibarra</div>
+    </div>
+    <nav>
+      <a href="#servicios">Servicios</a>
+      <a href="#">Estudio</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Plancha a 16:9 completa. La tipografía se apoya en la zona
+         oscura natural de la izquierda, sin recortar la composición. -->
+    <section class="ed-plate">
+      <img src="../assets/img/hero-1600.webp" width="1672" height="941"
+           alt="Barbero perfilando la barba de un cliente en Noble Barber Studio"
+           fetchpriority="high">
+
+      <div class="ed-overlay">
+        <h1 class="display reveal-mask" id="edTitle">
+          <span>Tu tiempo.</span>
+          <span class="thin">Tu presencia.</span>
+        </h1>
+        <p class="ed-sub">Grooming masculino en Ibarra. Eliges servicio, profesional y hora.</p>
+        <div class="ed-overlay-cta">
+          <button class="ed-btn ed-btn-light">
+            Reservar cita
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M2 8h11M9.5 4.5 13 8l-3.5 3.5"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="ed-credit">El estudio<br>Ibarra, Ecuador</div>
+    </section>
+
+    <div class="ed-strip cut-host">
+      <div class="ed-slot">
+        <small>Próximo turno</small>
+        <b id="edSlot">—</b>
+      </div>
+      <span class="cut cut-draw" aria-hidden="true"></span>
+      <a class="ed-btn-ghost" href="#servicios">Ver servicios</a>
+    </div>
+
+    <section class="ed-services" id="servicios">
+      <div class="ed-services-head">
+        <h2 class="display">Servicios</h2>
+        <p>Duración y precio a la vista</p>
+      </div>
+
+      <div class="ed-layout">
+        <div id="edRows"></div>
+
+        <figure class="ed-figure">
+          <div class="ed-figure-shot">
+            <!-- Hueco preparado: cada servicio tendrá su propia fotografía -->
+            <img id="edFigure" src="../assets/img/hero-1600.webp" alt="">
+          </div>
+          <figcaption>
+            <span id="edFigureLabel">El estudio</span>
+            <span>Fig. 01</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <nav class="switcher" aria-label="Conceptos">
+    <span>Concepto</span>
+    <a href="editorial.html" aria-current="page">A Editorial</a>
+    <a href="craft.html">B Craft</a>
+    <a href="club.html">C Club</a>
+  </nav>
+
+  <script src="../data.js"></script>
+  <script src="concepts.js"></script>
+</body>
+</html>
