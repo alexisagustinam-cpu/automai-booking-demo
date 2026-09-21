@@ -2,12 +2,15 @@
    NOBLE BARBER STUDIO
    Sistema de marca: cálido, editorial, fotografía real de luz
    de día. Papel dominante, tinta casi negra, acento burdeos.
-   Tipografía Cabinet Grotesk (display) + Supreme (interfaz) +
-   Tabular (datos: horarios, precios, duraciones).
+   Tipografía Cabinet Grotesk (titulares de impacto: hero y cierre) +
+   Zodiak (titulares editoriales: estudio y testimonios, como en el
+   mockup aprobado) + Supreme (interfaz) + Tabular (datos: horarios,
+   precios, duraciones).
    ========================================================= */
 
 @font-face { font-family:'Cabinet Grotesk'; src:url('assets/fonts/cabinet-grotesk-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
 @font-face { font-family:'Cabinet Grotesk'; src:url('assets/fonts/cabinet-grotesk-800.woff2') format('woff2'); font-weight:800; font-display:swap; }
+@font-face { font-family:'Zodiak'; src:url('assets/fonts/zodiak-700.woff2') format('woff2'); font-weight:700; font-display:swap; }
 @font-face { font-family:'Supreme'; src:url('assets/fonts/supreme-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
 @font-face { font-family:'Supreme'; src:url('assets/fonts/supreme-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
 @font-face { font-family:'Tabular'; src:url('assets/fonts/tabular-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
@@ -127,6 +130,14 @@ h1, h2, h3, p { margin: 0; }
   letter-spacing: -0.015em;
 }
 
+/* Titulares editoriales (estudio, testimonios): serif, como en el
+   mockup — solo el hero y el cierre usan la sans de impacto. */
+.display-serif {
+  font-family: 'Zodiak', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -209,9 +220,9 @@ h1, h2, h3, p { margin: 0; }
 
 /* ---------- Nav ---------- */
 
-/* Sobre el hero, el nav es un difuminado suave (humo), no una barra
-   sólida: la foto se asoma detrás. Al hacer scroll y dejar el hero
-   se vuelve un fondo sólido y legible. */
+/* Barra sólida y opaca (como en el mockup): el hero empieza debajo,
+   no detrás de ella. El humo/degradado claro vive dentro de la
+   propia foto del hero, no en el nav. */
 .nav {
   position: fixed;
   inset: 0 0 auto 0;
@@ -221,17 +232,13 @@ h1, h2, h3, p { margin: 0; }
   align-items: center;
   gap: clamp(20px, 3.4vw, 48px);
   padding: 0 var(--gutter);
-  background: linear-gradient(180deg, rgba(242,237,229,0.5) 0%, rgba(242,237,229,0.22) 65%, rgba(242,237,229,0) 100%);
+  background: rgba(242, 237, 229, 0.92);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid transparent;
-  transition: background-color 0.3s var(--ease), background-image 0.3s var(--ease), backdrop-filter 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 
-.nav.is-stuck {
-  background: rgba(242, 237, 229, 0.86);
-  backdrop-filter: blur(10px);
-  border-bottom-color: var(--line);
-  box-shadow: 0 1px 0 rgba(27,23,18,0.02);
-}
+.nav.is-stuck { border-bottom-color: var(--line); box-shadow: 0 1px 0 rgba(27,23,18,0.02); }
 
 .nav-links { display: flex; gap: clamp(16px, 2.2vw, 28px); font-size: 14px; color: var(--ink-soft); }
 .nav-links a { position: relative; padding: 4px 0; transition: color 0.25s var(--ease); }
@@ -288,7 +295,8 @@ h1, h2, h3, p { margin: 0; }
 
 .hero {
   position: relative;
-  min-height: 100vh;
+  margin-top: var(--nav-h);
+  min-height: calc(100vh - var(--nav-h));
   overflow: hidden;
   background: var(--ink);
 }
@@ -312,10 +320,10 @@ h1, h2, h3, p { margin: 0; }
 .hero-content {
   position: relative;
   z-index: 2;
-  min-height: 100vh;
+  min-height: calc(100vh - var(--nav-h));
   display: flex;
   align-items: center;
-  padding: clamp(90px, 12vw, 130px) var(--gutter) clamp(32px, 4.4vw, 56px);
+  padding: clamp(32px, 4.4vw, 56px) var(--gutter);
 }
 
 .hero-copy { max-width: 40ch; color: var(--ink); }
@@ -354,7 +362,7 @@ h1, h2, h3, p { margin: 0; }
   position: absolute;
   z-index: 2;
   right: clamp(20px, 3vw, 40px);
-  top: calc(var(--nav-h) + clamp(14px, 2vw, 24px));
+  top: clamp(22px, 3.2vw, 36px);
 }
 
 .hero-side-tag {
@@ -379,7 +387,7 @@ h1, h2, h3, p { margin: 0; }
   position: absolute;
   z-index: 3;
   right: clamp(20px, 3vw, 40px);
-  top: calc(var(--nav-h) + clamp(48px, 8vw, 76px));
+  top: clamp(70px, 11vw, 108px);
   width: min(220px, 44%);
   padding: 15px 16px;
   border-radius: var(--r-card);
@@ -408,10 +416,17 @@ h1, h2, h3, p { margin: 0; }
 /* Sin max-width: cada sección usa el ancho completo de la pantalla,
    con el mismo margen lateral que el navbar — nada de columnas
    centradas con barras en blanco a los costados. */
-.section { padding: clamp(60px, 8vw, 100px) var(--gutter); }
+.section { padding: clamp(48px, 6vw, 80px) var(--gutter); }
 .section-top { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: clamp(28px, 4vw, 44px); flex-wrap: wrap; }
 .section-top h2 { font-size: clamp(24px, 2vw, 30px); }
 .section-top .eyebrow-tail { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); text-align: right; }
+
+/* Servicios y Equipo se leen como un mismo bloque (01/02) apilado:
+   el espacio entre ambos es mucho menor que el que separa al bloque
+   del resto de las secciones. Cómo funciona también se ajusta para
+   no quedar con aire de más arriba y abajo. */
+#equipo { padding-top: clamp(20px, 2.4vw, 32px); }
+#proceso { padding-top: clamp(28px, 3.4vw, 48px); padding-bottom: clamp(28px, 3.4vw, 48px); }
 
 /* ---------- Servicios ---------- */
 
@@ -493,8 +508,10 @@ h1, h2, h3, p { margin: 0; }
    mockup); la copy y las fotos laterales quedan alineadas al mismo
    margen derecho que el resto de las secciones. */
 .studio { background: var(--paper); }
+/* Sin padding abajo: la sección queda pegada a la franja vino tinto
+   que sigue, sin aire de papel entre ambas (como en el mockup). */
 .studio-inner {
-  padding: clamp(60px, 8vw, 100px) var(--gutter) clamp(60px, 8vw, 100px) 0;
+  padding: clamp(28px, 3.4vw, 48px) var(--gutter) 0 0;
   display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.85fr) minmax(0, 0.55fr);
   gap: clamp(28px, 3.4vw, 48px); align-items: center;
 }
@@ -525,11 +542,14 @@ h1, h2, h3, p { margin: 0; }
 
 /* Sin max-width: la franja completa (foto + burdeos) sangra de lateral
    a lateral, como en el mockup. */
-.closing-inner { display: grid; grid-template-columns: minmax(180px, 0.38fr) minmax(0, 1fr) auto; align-items: stretch; min-height: clamp(280px, 34vw, 380px); }
+/* La foto ocupa casi la mitad de la franja, como en el mockup; el
+   degradado hacia el vino recién empieza cerca de la mitad de la
+   propia foto, no a los dos tercios. */
+.closing-inner { display: grid; grid-template-columns: minmax(220px, 0.95fr) minmax(0, 1.05fr) auto; align-items: stretch; min-height: clamp(280px, 34vw, 380px); }
 
 .closing-photo { position: relative; overflow: hidden; }
 .closing-photo img { width: 100%; height: 100%; object-fit: cover; }
-.closing-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(78,18,22,0) 55%, var(--wine) 100%); }
+.closing-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(78,18,22,0) 78%, var(--wine) 100%); }
 
 .closing-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(28px, 4vw, 40px) clamp(24px, 3vw, 40px); }
 .closing-copy .eyebrow { color: rgba(255,255,255,0.6); margin-bottom: 14px; }
@@ -559,7 +579,7 @@ h1, h2, h3, p { margin: 0; }
 
 .testimonials-inner { padding: clamp(60px, 8vw, 100px) var(--gutter); display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(28px, 4vw, 54px); align-items: center; }
 
-.testimonials-copy h2 { font-size: clamp(28px, 3.2vw, 46px); margin-top: 16px; max-width: 12ch; }
+.testimonials-copy h2 { font-size: clamp(28px, 3.2vw, 46px); margin-top: 16px; }
 
 .quote-card { display: flex; align-items: flex-start; justify-content: space-between; gap: 28px; }
 .quote-body { max-width: 46ch; }
@@ -782,7 +802,7 @@ h1, h2, h3, p { margin: 0; }
 
 @media (max-width: 1100px) {
   .team-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .studio-inner { grid-template-columns: 1fr; padding: clamp(60px, 8vw, 100px) var(--gutter); }
+  .studio-inner { grid-template-columns: 1fr; padding: clamp(48px, 6vw, 80px) var(--gutter) 0; }
   .studio-photo { border-radius: var(--r-photo); aspect-ratio: 16/9; }
   .testimonials-inner { grid-template-columns: 1fr; }
   .studio-side-photos { grid-template-columns: 1fr 1fr; }
