@@ -58,21 +58,9 @@
   </div>
 
   <main>
-    <!-- Hero: fotografía real a 16:9 completa, sin recortes forzados -->
+    <!-- Hero: panel de texto sobre papel + foto completa al lado, tal como el mockup -->
     <section class="hero" id="inicio">
-      <div class="hero-plate" id="heroPhoto">
-        <picture>
-          <source srcset="assets/img/noble-hero-700.webp 700w, assets/img/noble-hero-1100.webp 1100w, assets/img/noble-hero-1600.webp 1600w"
-                  sizes="100vw" type="image/webp">
-          <img src="assets/img/noble-hero-1600.webp" width="1672" height="940"
-               alt="Barbero cortando el cabello de un cliente en un estudio luminoso con vista a la montaña, Noble Barber Studio"
-               fetchpriority="high" decoding="async">
-        </picture>
-
-        <span class="wordmark on-wine hero-brandmark">
-          <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
-        </span>
-
+      <div class="hero-inner">
         <div class="hero-copy">
           <span class="eyebrow" id="heroEyebrow">Ibarra, Ecuador</span>
           <h1 class="display hero-title" id="heroTitle">
@@ -86,44 +74,57 @@
             </button>
             <a class="btn-ghost" href="#servicios">Ver servicios</a>
           </div>
+          <p class="hero-tagline"><span class="hero-tagline-rule" aria-hidden="true"></span>Disciplina también<br>es autocuidado.</p>
         </div>
 
-        <p class="hero-tagline">Disciplina también es autocuidado.</p>
-        <p class="hero-side-tag">Más que un corte, una mejor versión de ti.</p>
+        <div class="hero-plate" id="heroPhoto">
+          <picture>
+            <source srcset="assets/img/noble-hero-700.webp 700w, assets/img/noble-hero-1100.webp 1100w, assets/img/noble-hero-1600.webp 1600w"
+                    sizes="(max-width: 860px) 100vw, 62vw" type="image/webp">
+            <img src="assets/img/noble-hero-1600.webp" width="1672" height="940"
+                 alt="Barbero cortando el cabello de un cliente en un estudio luminoso con vista a la montaña, Noble Barber Studio"
+                 fetchpriority="high" decoding="async">
+          </picture>
 
-        <div class="slot-card" id="slotCard">
-          <span class="slot-card-label"><i class="dot" aria-hidden="true"></i> Próximo turno</span>
-          <strong id="nextSlot">—</strong>
-          <button class="btn btn-primary" data-action="open-booking">
-            Reservar <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
-          </button>
+          <span class="wordmark on-wine hero-brandmark">
+            <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
+          </span>
+
+          <div class="slot-card" id="slotCard">
+            <span class="slot-card-label"><i class="dot" aria-hidden="true"></i> Próximo turno</span>
+            <strong id="nextSlot">—</strong>
+            <button class="btn btn-primary" data-action="open-booking">
+              Reservar <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <p class="hero-side-tag">Más que un corte,<br>una mejor versión de ti.</p>
         </div>
       </div>
     </section>
 
-    <!-- Servicios -->
-    <section class="section" id="servicios">
-      <div class="section-top reveal">
-        <div>
-          <span class="eyebrow"><span class="eyebrow-num">01</span><span class="eyebrow-rule"></span>Servicios</span>
+    <!-- Servicios + Equipo, lado a lado como en el mockup -->
+    <section class="section svc-team-section">
+      <div class="svc-team-grid">
+        <div class="svc-col" id="servicios">
+          <div class="section-top reveal">
+            <span class="eyebrow"><span class="eyebrow-num">01</span><span class="eyebrow-rule"></span>Servicios</span>
+            <span class="eyebrow-tail">Corte. Estilo. Disciplina.</span>
+          </div>
+          <div class="service-list" id="serviceList"></div>
+          <p class="service-foot reveal">
+            <a class="btn-ghost" href="#estudio">Ver todos los servicios</a>
+          </p>
         </div>
-        <span class="eyebrow-tail">Corte. Estilo. Disciplina.</span>
-      </div>
-      <div class="service-list" id="serviceList"></div>
-      <p class="service-foot reveal">
-        <a class="btn-ghost" href="#estudio">Conoce el estudio</a>
-      </p>
-    </section>
 
-    <!-- Equipo -->
-    <section class="section" id="equipo">
-      <div class="section-top reveal">
-        <div>
-          <span class="eyebrow"><span class="eyebrow-num">02</span><span class="eyebrow-rule"></span>Nuestro equipo</span>
+        <div class="team-col" id="equipo">
+          <div class="section-top reveal">
+            <span class="eyebrow"><span class="eyebrow-num">02</span><span class="eyebrow-rule"></span>Nuestro equipo</span>
+            <span class="eyebrow-tail">Personas, no solo barberos.</span>
+          </div>
+          <div class="team-grid" id="teamGrid"></div>
         </div>
-        <span class="eyebrow-tail">Personas, no solo barberos.</span>
       </div>
-      <div class="team-grid" id="teamGrid"></div>
     </section>
 
     <!-- Cómo funciona -->
@@ -185,6 +186,14 @@
           <h2 class="display">Un espacio para el hombre de hoy.</h2>
           <p>Comodidad, buena energía y atención al detalle. Aquí no solo vienes por un corte, vienes por un momento tuyo.</p>
           <a class="btn btn-primary" href="#contacto">Conoce nuestro espacio <i class="ph-light ph-arrow-right" aria-hidden="true"></i></a>
+        </div>
+
+        <div class="studio-side reveal">
+          <div class="studio-side-photos">
+            <!-- Espacio reservado: aquí van las 2 fotos nuevas que vas a generar tú -->
+            <div class="studio-side-photo" aria-hidden="true"><i class="ph-light ph-image"></i></div>
+            <div class="studio-side-photo" aria-hidden="true"><i class="ph-light ph-image"></i></div>
+          </div>
           <div class="studio-words">
             <span>Disciplina</span>
             <span>Estilo</span>
