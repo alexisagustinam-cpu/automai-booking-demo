@@ -41,7 +41,7 @@ const num = i => String(i + 1).padStart(2, '0');
 /* ---------- Concepto A, editorial ---------- */
 
 function renderEditorial() {
-  document.getElementById('edSlot').textContent = nextText;
+  document.getElementById('edSlotNav').textContent = nextText;
 
   document.getElementById('edRows').innerHTML = SERVICES.map((s, i) => `
     <button class="ed-row cut-host" data-service="${s.id}" data-label="${s.name}">

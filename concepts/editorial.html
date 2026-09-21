@@ -12,23 +12,43 @@
 <body class="c-editorial" data-concept="editorial">
 
   <header class="ed-masthead">
-    <div>
-      <div class="ed-logo">Noble</div>
-      <div class="ed-descriptor">Barber Studio / Ibarra</div>
-    </div>
-    <nav>
+    <a class="ed-flag" href="#">
+      <span class="ed-logo">Noble</span>
+      <span class="ed-flag-rule" aria-hidden="true"></span>
+      <span class="ed-descriptor">Barber<br>Studio</span>
+    </a>
+
+    <nav class="ed-nav">
       <a href="#servicios">Servicios</a>
+      <a href="#">Equipo</a>
       <a href="#">Estudio</a>
     </nav>
+
+    <div class="ed-masthead-end">
+      <span class="ed-live">
+        <small>Próximo turno</small>
+        <b id="edSlotNav">—</b>
+      </span>
+      <button class="ed-btn ed-btn-sm">
+        Reservar cita
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M2 8h11M9.5 4.5 13 8l-3.5 3.5"/>
+        </svg>
+      </button>
+    </div>
   </header>
 
   <main>
-    <!-- Plancha a 16:9 completa. La tipografía se apoya en la zona
-         oscura natural de la izquierda, sin recortar la composición. -->
-    <section class="ed-plate">
-      <img src="../assets/img/hero-1600.webp" width="1672" height="941"
-           alt="Barbero perfilando la barba de un cliente en Noble Barber Studio"
-           fetchpriority="high">
+    <!-- Plancha a 16:9 completa. El overlay es hermano de la foto, no
+         hijo: así en móvil puede pasar a flujo normal sin quedar
+         recortado por el overflow:hidden del contenedor de la imagen. -->
+    <section class="ed-hero">
+      <div class="ed-plate">
+        <img src="../assets/img/hero-1600.webp" width="1672" height="941"
+             alt="Barbero perfilando la barba de un cliente en Noble Barber Studio"
+             fetchpriority="high">
+        <div class="ed-credit">El estudio<br>Ibarra, Ecuador</div>
+      </div>
 
       <div class="ed-overlay">
         <h1 class="display reveal-mask" id="edTitle">
@@ -45,15 +65,10 @@
           </button>
         </div>
       </div>
-
-      <div class="ed-credit">El estudio<br>Ibarra, Ecuador</div>
     </section>
 
     <div class="ed-strip cut-host">
-      <div class="ed-slot">
-        <small>Próximo turno</small>
-        <b id="edSlot">—</b>
-      </div>
+      <span class="ed-strip-label">Ibarra, Ecuador</span>
       <span class="cut cut-draw" aria-hidden="true"></span>
       <a class="ed-btn-ghost" href="#servicios">Ver servicios</a>
     </div>
