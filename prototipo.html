@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#F4F1EC" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Prototipo de dirección | Noble Barber Studio</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="prototipo.css" />
+</head>
+<body>
+
+  <header class="top">
+    <div class="top-inner">
+      <a class="mark" href="#">
+        <span class="mark-name">NOBLE</span>
+        <span class="mark-rule"></span>
+        <span class="mark-sub" id="markSub"></span>
+      </a>
+
+      <nav>
+        <a href="#carta">La carta</a>
+        <a href="#">El estudio</a>
+        <a href="#">Equipo</a>
+      </nav>
+
+      <button class="btn btn-ink">
+        Reservar cita
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <path d="M2 8h11M9 4l4 4-4 4" stroke-linecap="square"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow">Ibarra, desde 2019</span>
+          <h1>Más que un corte,<br><em>una mejor versión de ti.</em></h1>
+        </div>
+
+        <div class="hero-aside">
+          <p>Grooming masculino con atención personalizada. Eliges servicio, profesional y hora, y el turno queda apartado a tu nombre.</p>
+          <div class="hero-actions">
+            <button class="btn btn-ink">
+              Reservar cita
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                <path d="M2 8h11M9 4l4 4-4 4" stroke-linecap="square"/>
+              </svg>
+            </button>
+            <a class="btn btn-line" href="#carta">Ver la carta</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- La fotografía a su proporción real: 16:9, sin recortes -->
+      <div class="band">
+        <div class="band-photo">
+          <img src="assets/img/hero-1600.webp"
+               srcset="assets/img/hero-700.webp 700w, assets/img/hero-1100.webp 1100w, assets/img/hero-1600.webp 1600w"
+               sizes="100vw" width="1672" height="941"
+               alt="Barbero perfilando la barba de un cliente en Noble Barber Studio"
+               fetchpriority="high">
+        </div>
+
+        <div class="slot">
+          <span class="slot-label"><i aria-hidden="true"></i> Próximo turno libre</span>
+          <strong id="nextSlot">—</strong>
+          <button class="btn btn-ink">
+            Tomar este turno
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M2 8h11M9 4l4 4-4 4" stroke-linecap="square"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Datos reales del sistema, no decorativos -->
+    <section class="facts">
+      <div class="facts-inner" id="facts"></div>
+    </section>
+
+    <section class="menu" id="carta">
+      <div class="wrap">
+        <div class="menu-head">
+          <h2>La carta</h2>
+          <p>Duración y precio a la vista. Al elegir, pasas directo a los turnos que están realmente libres.</p>
+        </div>
+        <div id="menuList"></div>
+      </div>
+    </section>
+
+    <div class="wrap proto-note">
+      <b>Prototipo de dirección.</b>
+      Papel dominante en vez de negro, acento burdeos en vez de dorado, Zodiak y Switzer autoalojadas,
+      fotografía a 16:9 sin recortar y los servicios como carta. No toca el sitio actual.
+    </div>
+  </main>
+
+  <script src="data.js"></script>
+  <script>
+    /* Datos reales: misma fuente que el sitio, sin duplicar lógica. */
+    const bookings = Store.bookings();
+    const taken = (date, time, barberId) =>
+      bookings.some(b => b.date === date && b.time === time && b.barber === barberId);
+    const freeSlots = (date, barberId) =>
+      slotsForDate(date).filter(t => barberId
+        ? !taken(date, t, barberId)
+        : !BARBERS.every(b => taken(date, t, b.id)));
+
+    function nextSlot() {
+      const now = new Date();
+      for (let offset = 0; offset < 7; offset++) {
+        const date = dateISO(offset);
+        const free = freeSlots(date, null).filter(t => {
+          if (offset > 0) return true;
+          const [h, m] = t.split(':').map(Number);
+          return h * 60 + m > now.getHours() * 60 + now.getMinutes();
+        });
+        if (free.length) {
+          const label = offset === 0 ? 'Hoy' : offset === 1 ? 'Mañana' : niceDate(date);
+          return `${label}, ${free[0]}`;
+        }
+      }
+      return 'Agenda completa';
+    }
+
+    /* La bajada del wordmark se justifica al ancho exacto del nombre. */
+    document.getElementById('markSub').innerHTML =
+      'Barber Studio'.toUpperCase().split('').map(c => `<span>${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+
+    document.getElementById('nextSlot').textContent = nextSlot();
+
+    const day = isClosed(dateISO(0)) ? nextOpenDate(0) : dateISO(0);
+    const librosHoy = BARBERS.filter(b => freeSlots(day, b.id).length).length;
+    const precios = SERVICES.map(s => s.price);
+    const duraciones = SERVICES.map(s => s.duration);
+
+    document.getElementById('facts').innerHTML = [
+      ['Turnos libres hoy', freeSlots(day, null).length],
+      ['Profesionales en agenda', `${librosHoy} de ${BARBERS.length}`],
+      ['Servicios desde', '$' + Math.min(...precios)],
+      ['Duración', `${Math.min(...duraciones)} a ${Math.max(...duraciones)} min`]
+    ].map(([label, value]) => `
+      <div class="fact"><span>${label}</span><b>${value}</b></div>
+    `).join('');
+
+    document.getElementById('menuList').innerHTML = SERVICES.map((s, i) => `
+      <button class="dish">
+        <span class="dish-num">${String(i + 1).padStart(2, '0')}</span>
+        <span class="dish-name">${s.name}</span>
+        <span class="dish-lead" aria-hidden="true"></span>
+        <span class="dish-time">${s.duration} min</span>
+        <span class="dish-price">$${s.price}</span>
+        <span class="dish-desc">${s.desc}</span>
+      </button>
+    `).join('');
+  </script>
+</body>
+</html>
