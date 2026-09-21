@@ -209,6 +209,9 @@ h1, h2, h3, p { margin: 0; }
 
 /* ---------- Nav ---------- */
 
+/* Sobre el hero, el nav es un difuminado suave (humo), no una barra
+   sólida: la foto se asoma detrás. Al hacer scroll y dejar el hero
+   se vuelve un fondo sólido y legible. */
 .nav {
   position: fixed;
   inset: 0 0 auto 0;
@@ -218,13 +221,17 @@ h1, h2, h3, p { margin: 0; }
   align-items: center;
   gap: clamp(20px, 3.4vw, 48px);
   padding: 0 var(--gutter);
-  background: rgba(242, 237, 229, 0.86);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(242,237,229,0.5) 0%, rgba(242,237,229,0.22) 65%, rgba(242,237,229,0) 100%);
   border-bottom: 1px solid transparent;
-  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: background-color 0.3s var(--ease), background-image 0.3s var(--ease), backdrop-filter 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 
-.nav.is-stuck { border-bottom-color: var(--line); box-shadow: 0 1px 0 rgba(27,23,18,0.02); }
+.nav.is-stuck {
+  background: rgba(242, 237, 229, 0.86);
+  backdrop-filter: blur(10px);
+  border-bottom-color: var(--line);
+  box-shadow: 0 1px 0 rgba(27,23,18,0.02);
+}
 
 .nav-links { display: flex; gap: clamp(16px, 2.2vw, 28px); font-size: 14px; color: var(--ink-soft); }
 .nav-links a { position: relative; padding: 4px 0; transition: color 0.25s var(--ease); }
@@ -281,8 +288,7 @@ h1, h2, h3, p { margin: 0; }
 
 .hero {
   position: relative;
-  margin-top: var(--nav-h);
-  min-height: clamp(560px, 78vh, 860px);
+  min-height: 100vh;
   overflow: hidden;
   background: var(--ink);
 }
@@ -290,44 +296,46 @@ h1, h2, h3, p { margin: 0; }
 .hero-plate { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--ink); }
 .hero-plate img { width: 100%; height: 100%; object-fit: cover; object-position: 58% 38%; will-change: transform; }
 
-/* Velo oscuro (no blanco/papel) para legibilidad del texto, más fuerte
-   donde va la copy y abajo donde va la etiqueta lateral. */
+/* Nada de bloque blanco sólido: un humo suave y difuminado detrás del
+   texto (arriba a la izquierda, bajo el nav) y un velo oscuro abajo
+   para la etiqueta lateral. Ambos se funden con la propia atmósfera
+   de la foto en vez de taparla. */
 .hero-plate::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(100deg, rgba(10,8,6,0.6) 0%, rgba(10,8,6,0.32) 30%, rgba(10,8,6,0) 56%),
-    linear-gradient(0deg, rgba(10,8,6,0.5) 0%, rgba(10,8,6,0) 30%);
+    radial-gradient(58% 62% at 20% 26%, rgba(247,244,238,0.55) 0%, rgba(247,244,238,0.28) 45%, rgba(247,244,238,0) 78%),
+    linear-gradient(0deg, rgba(10,8,6,0.48) 0%, rgba(10,8,6,0) 30%);
 }
 
 .hero-content {
   position: relative;
   z-index: 2;
-  min-height: clamp(560px, 78vh, 860px);
+  min-height: 100vh;
   display: flex;
   align-items: center;
   padding: clamp(90px, 12vw, 130px) var(--gutter) clamp(32px, 4.4vw, 56px);
 }
 
-.hero-copy { max-width: 40ch; color: #fff; }
-.hero-copy .eyebrow { margin-bottom: 18px; color: rgba(255,255,255,0.78); }
-.hero-copy .eyebrow-rule { background: rgba(255,255,255,0.3); }
+.hero-copy { max-width: 40ch; color: var(--ink); }
+.hero-copy .eyebrow { margin-bottom: 18px; color: var(--ink-soft); }
+.hero-copy .eyebrow-rule { background: var(--line); }
 
-.hero-title { font-size: clamp(36px, 5vw, 64px); color: #fff; }
-.hero-title .line-b { color: var(--wine-glow); }
+.hero-title { font-size: clamp(36px, 5vw, 64px); color: var(--ink); }
+.hero-title .line-b { color: var(--wine); }
 
 .hero-lead {
   margin-top: 18px;
   max-width: 34ch;
   font-size: 15px;
   line-height: 1.6;
-  color: rgba(255,255,255,0.82);
+  color: var(--ink-soft);
 }
 
 .hero-actions { display: flex; align-items: center; gap: 18px; margin-top: 28px; }
-.hero-actions .btn-ghost { color: #fff; }
-.hero-actions .btn-ghost::after { background: #fff; }
+.hero-actions .btn-ghost { color: var(--ink); }
+.hero-actions .btn-ghost::after { background: var(--ink); }
 
 .hero-tagline {
   margin-top: 44px;
@@ -338,15 +346,15 @@ h1, h2, h3, p { margin: 0; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 1.6;
-  color: rgba(255,255,255,0.75);
+  color: var(--ink-soft);
 }
-.hero-tagline-rule { display: block; width: 34px; height: 1px; margin-bottom: 12px; background: rgba(255,255,255,0.3); }
+.hero-tagline-rule { display: block; width: 34px; height: 1px; margin-bottom: 12px; background: var(--line); }
 
 .hero-brandmark {
   position: absolute;
   z-index: 2;
   right: clamp(20px, 3vw, 40px);
-  top: clamp(22px, 3.2vw, 36px);
+  top: calc(var(--nav-h) + clamp(14px, 2vw, 24px));
 }
 
 .hero-side-tag {
@@ -371,7 +379,7 @@ h1, h2, h3, p { margin: 0; }
   position: absolute;
   z-index: 3;
   right: clamp(20px, 3vw, 40px);
-  top: clamp(70px, 11vw, 108px);
+  top: calc(var(--nav-h) + clamp(48px, 8vw, 76px));
   width: min(220px, 44%);
   padding: 15px 16px;
   border-radius: var(--r-card);
@@ -397,7 +405,10 @@ h1, h2, h3, p { margin: 0; }
 
 /* ---------- Estructura general de sección ---------- */
 
-.section { max-width: var(--maxw); margin: 0 auto; padding: clamp(60px, 8vw, 100px) var(--gutter); }
+/* Sin max-width: cada sección usa el ancho completo de la pantalla,
+   con el mismo margen lateral que el navbar — nada de columnas
+   centradas con barras en blanco a los costados. */
+.section { padding: clamp(60px, 8vw, 100px) var(--gutter); }
 .section-top { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: clamp(28px, 4vw, 44px); flex-wrap: wrap; }
 .section-top h2 { font-size: clamp(24px, 2vw, 30px); }
 .section-top .eyebrow-tail { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); text-align: right; }
@@ -483,9 +494,8 @@ h1, h2, h3, p { margin: 0; }
    margen derecho que el resto de las secciones. */
 .studio { background: var(--paper); }
 .studio-inner {
-  padding: clamp(60px, 8vw, 100px) 0 clamp(60px, 8vw, 100px) 0;
-  padding-right: max(var(--gutter), calc((100vw - var(--maxw)) / 2));
-  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.85fr) minmax(0, 0.6fr);
+  padding: clamp(60px, 8vw, 100px) var(--gutter) clamp(60px, 8vw, 100px) 0;
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.85fr) minmax(0, 0.55fr);
   gap: clamp(28px, 3.4vw, 48px); align-items: center;
 }
 
@@ -547,7 +557,7 @@ h1, h2, h3, p { margin: 0; }
 
 /* ---------- Testimonios ---------- */
 
-.testimonials-inner { max-width: var(--maxw); margin: 0 auto; padding: clamp(60px, 8vw, 100px) var(--gutter); display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(28px, 4vw, 54px); align-items: center; }
+.testimonials-inner { padding: clamp(60px, 8vw, 100px) var(--gutter); display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(28px, 4vw, 54px); align-items: center; }
 
 .testimonials-copy h2 { font-size: clamp(28px, 3.2vw, 46px); margin-top: 16px; max-width: 12ch; }
 
@@ -573,7 +583,7 @@ h1, h2, h3, p { margin: 0; }
 /* ---------- Pie ---------- */
 
 .footer { border-top: 1px solid var(--line); }
-.footer-inner { max-width: var(--maxw); margin: 0 auto; padding: 30px var(--gutter); display: flex; align-items: center; gap: clamp(20px, 3vw, 44px); flex-wrap: wrap; }
+.footer-inner { padding: 30px var(--gutter); display: flex; align-items: center; gap: clamp(20px, 3vw, 44px); flex-wrap: wrap; }
 
 .footer-nav { display: flex; gap: clamp(14px, 2vw, 24px); font-size: 13px; color: var(--ink-soft); }
 .footer-nav a:hover { color: var(--ink); }
