@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#10100f" />
+  <title>Noble Studio — Demo de Reservas + CRM | AutomAI Labs</title>
+  <meta name="description" content="Demo funcional de un sistema web de reservas y CRM para barberías, creado como concepto por AutomAI Labs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <header class="site-header" id="siteHeader">
+    <a class="brand" href="#inicio" aria-label="Noble Studio inicio">
+      <span class="brand-mark">N</span>
+      <span class="brand-copy"><strong>NOBLE</strong><small>BARBER STUDIO</small></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Principal">
+      <a href="#servicios">Servicios</a>
+      <a href="#equipo">Equipo</a>
+      <a href="#experiencia">Experiencia</a>
+      <button class="nav-link-button" data-action="open-crm">Vista negocio</button>
+    </nav>
+    <button class="btn btn-primary btn-small" data-action="open-booking">Reservar cita</button>
+  </header>
+
+  <main id="clientView">
+    <section class="hero" id="inicio">
+      <div class="hero-noise"></div>
+      <div class="hero-copy reveal">
+        <span class="eyebrow">IBARRA · ECUADOR</span>
+        <h1>Tu tiempo.<br><em>Tu estilo.</em></h1>
+        <p>Reserva tu próxima experiencia en segundos. Elige servicio, barbero y hora disponible sin llamadas ni esperas.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" data-action="open-booking">Reservar ahora <span>↗</span></button>
+          <a class="btn btn-ghost" href="#servicios">Ver servicios</a>
+        </div>
+        <div class="hero-proof">
+          <div><strong>4.9</strong><span>★★★★★</span><small>Experiencia promedio</small></div>
+          <div><strong>+1.2K</strong><small>Citas gestionadas</small></div>
+          <div><strong>3</strong><small>Barberos disponibles</small></div>
+        </div>
+      </div>
+      <div class="hero-visual reveal delay-1">
+        <div class="hero-photo">
+          <img class="hero-photo-img" src="assets/hero.webp" alt="Barbero atendiendo a un cliente en Noble Barber Studio">
+          <div class="photo-gradient"></div>
+          <div class="availability-card glass">
+            <span class="status-dot"></span>
+            <div><small>Próximo espacio</small><strong>Hoy · 16:30</strong></div>
+            <button data-action="open-booking">Tomar turno</button>
+          </div>
+          <div class="vertical-label">PRECISIÓN · DETALLE · PRESENCIA</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section services" id="servicios">
+      <div class="section-heading reveal">
+        <div><span class="eyebrow">SERVICIOS</span><h2>Menos espera.<br>Más presencia.</h2></div>
+        <p>Servicios claros, duración definida y disponibilidad real. Selecciona lo que necesitas y agenda al instante.</p>
+      </div>
+      <div class="service-grid" id="serviceGrid"></div>
+    </section>
+
+    <section class="section team" id="equipo">
+      <div class="section-heading reveal">
+        <div><span class="eyebrow">NUESTRO EQUIPO</span><h2>Elige quién<br>te atiende.</h2></div>
+        <p>Cada profesional administra su propia agenda. Puedes elegir tu barbero favorito o dejar que el sistema te muestre el primero disponible.</p>
+      </div>
+      <div class="team-grid" id="teamGrid"></div>
+    </section>
+
+    <section class="section experience" id="experiencia">
+      <div class="experience-panel reveal">
+        <span class="eyebrow">UNA RESERVA, SIN FRICCIÓN</span>
+        <h2>De “¿tienen espacio?”<br>a cita confirmada.</h2>
+        <div class="steps">
+          <div><span>01</span><strong>Elige servicio</strong><small>Precio y duración visibles.</small></div>
+          <div><span>02</span><strong>Selecciona profesional</strong><small>O toma el primero disponible.</small></div>
+          <div><span>03</span><strong>Escoge tu hora</strong><small>Solo aparecen turnos libres.</small></div>
+          <div><span>04</span><strong>Confirma</strong><small>La cita entra directo a la agenda.</small></div>
+        </div>
+        <button class="btn btn-light" data-action="open-booking">Probar reserva</button>
+      </div>
+    </section>
+
+    <section class="section cta-section">
+      <div class="cta-card reveal">
+        <span class="eyebrow">NOBLE BARBER STUDIO</span>
+        <h2>Tu próximo corte<br>ya tiene hora.</h2>
+        <button class="btn btn-primary" data-action="open-booking">Ver disponibilidad <span>↗</span></button>
+        <p>Demo conceptual por <strong>AutomAI Labs</strong> · Reservas + CRM + automatización.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="overlay" id="bookingOverlay" aria-hidden="true">
+    <div class="booking-shell">
+      <div class="booking-aside">
+        <button class="icon-btn close-mobile" data-action="close-booking" aria-label="Cerrar">×</button>
+        <div>
+          <span class="eyebrow">RESERVA ONLINE</span>
+          <h2>Tu cita,<br><em>en minutos.</em></h2>
+          <p>Disponibilidad simulada en tiempo real para la demo.</p>
+        </div>
+        <div class="booking-summary" id="bookingSummary"></div>
+        <small class="powered">Concept demo · AutomAI Labs</small>
+      </div>
+      <div class="booking-main">
+        <div class="booking-topbar">
+          <div class="step-counter" id="stepCounter">Paso 1 de 4</div>
+          <button class="icon-btn" data-action="close-booking" aria-label="Cerrar">×</button>
+        </div>
+        <div class="booking-step active" data-step="1"><span class="eyebrow">PASO 01</span><h3>¿Qué quieres reservar?</h3><p class="muted">Selecciona un servicio para consultar disponibilidad.</p><div class="booking-options" id="bookingServices"></div></div>
+        <div class="booking-step" data-step="2"><span class="eyebrow">PASO 02</span><h3>Elige tu barbero</h3><p class="muted">Puedes seleccionar un profesional o la opción más rápida.</p><div class="booking-options" id="bookingBarbers"></div><div class="step-actions"><button class="btn btn-ghost-dark" data-action="prev-step">← Atrás</button></div></div>
+        <div class="booking-step" data-step="3"><span class="eyebrow">PASO 03</span><h3>Fecha y hora</h3><p class="muted">Los horarios ocupados se bloquean automáticamente.</p><div class="date-strip" id="dateStrip"></div><div class="time-grid" id="timeGrid"></div><div class="step-actions"><button class="btn btn-ghost-dark" data-action="prev-step">← Atrás</button></div></div>
+        <div class="booking-step" data-step="4"><span class="eyebrow">PASO 04</span><h3>Confirma tus datos</h3><p class="muted">En producción aquí también podríamos solicitar anticipo o pago completo.</p><form id="bookingForm" class="booking-form"><label>Nombre completo<input required name="name" placeholder="Ej. Andrés Pérez" autocomplete="name"></label><label>WhatsApp<input required name="phone" placeholder="09 999 9999" autocomplete="tel"></label><label>Correo <small>(opcional)</small><input name="email" type="email" placeholder="correo@ejemplo.com" autocomplete="email"></label><label class="full">Nota <small>(opcional)</small><textarea name="note" placeholder="Alguna indicación para tu cita"></textarea></label><div class="payment-demo full"><div><span class="status-dot"></span><div><strong>Pago en el local</strong><small>Configuración actual de esta demo</small></div></div><span>$0 ahora</span></div><div class="step-actions full"><button type="button" class="btn btn-ghost-dark" data-action="prev-step">← Atrás</button><button type="submit" class="btn btn-primary">Confirmar reserva <span>↗</span></button></div></form></div>
+        <div class="booking-success" id="bookingSuccess"><div class="success-icon">✓</div><span class="eyebrow">RESERVA CONFIRMADA</span><h3>Listo. Ya estás en agenda.</h3><p id="successText"></p><div class="success-card" id="successCard"></div><div class="success-actions"><button class="btn btn-primary" data-action="close-booking">Volver al sitio</button><button class="btn btn-ghost-dark" data-action="open-crm">Ver cómo llegó al CRM</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="crm-view" id="crmView" aria-hidden="true">
+    <aside class="crm-sidebar"><div class="crm-logo"><span class="brand-mark">N</span><div><strong>NOBLE</strong><small>Business OS</small></div></div><nav><button class="active" data-crm-tab="dashboard"><span>⌂</span> Resumen</button><button data-crm-tab="agenda"><span>◷</span> Agenda</button><button data-crm-tab="clients"><span>◎</span> Clientes</button><button data-crm-tab="services"><span>◇</span> Servicios</button></nav><div class="crm-sidebar-bottom"><div class="integration-pill"><span class="status-dot"></span><div><strong>Automatizaciones</strong><small>Demo activa</small></div></div><button class="back-site" data-action="close-crm">← Ver página pública</button></div></aside>
+    <div class="crm-content"><header class="crm-header"><div><small>NOBLE BARBER STUDIO</small><h2 id="crmTitle">Resumen</h2></div><div class="crm-header-actions"><div class="today-label" id="todayLabel"></div><button class="btn btn-primary btn-small" data-action="crm-new-booking">+ Nueva reserva</button><div class="admin-avatar">AM</div></div></header>
+      <div class="crm-tab active" data-crm-content="dashboard"><div class="metric-grid" id="metricGrid"></div><div class="dashboard-grid"><article class="panel schedule-panel"><div class="panel-head"><div><small>AGENDA</small><h3>Próximas citas</h3></div><button data-crm-tab="agenda">Ver agenda →</button></div><div id="upcomingList" class="upcoming-list"></div></article><article class="panel"><div class="panel-head"><div><small>RENDIMIENTO</small><h3>Ocupación semanal</h3></div><span class="positive">+12%</span></div><div class="bar-chart" id="barChart"></div><div class="chart-legend"><span><i></i>Horas reservadas</span><strong>76% ocupación</strong></div></article><article class="panel automations-panel"><div class="panel-head"><div><small>AUTOMATIZACIÓN</small><h3>Flujos conectados</h3></div><span class="live-badge">● LIVE</span></div><div class="automation-list"><div><span>01</span><div><strong>Confirmación inmediata</strong><small>WhatsApp al crear una reserva</small></div><b>ON</b></div><div><span>02</span><div><strong>Recordatorio 24h</strong><small>Reduce ausencias automáticamente</small></div><b>ON</b></div><div><span>03</span><div><strong>Recuperación 30 días</strong><small>Reactiva clientes inactivos</small></div><b>ON</b></div></div></article><article class="panel customer-panel"><div class="panel-head"><div><small>CLIENTES</small><h3>Actividad reciente</h3></div><button data-crm-tab="clients">Ver CRM →</button></div><div id="recentCustomers"></div></article></div></div>
+      <div class="crm-tab" data-crm-content="agenda"><div class="toolbar"><div class="segmented"><button class="active">Día</button><button>Semana</button></div><span class="muted">Arrastra, reprograma o cambia el estado de una cita desde una sola vista.</span></div><div class="panel agenda-board"><div class="agenda-head"><span>Hora</span><span>Mateo</span><span>Daniel</span><span>Sebastián</span></div><div id="agendaGrid"></div></div></div>
+      <div class="crm-tab" data-crm-content="clients"><div class="client-toolbar"><div class="search-box">⌕ <input id="clientSearch" placeholder="Buscar cliente, teléfono o correo"></div><button class="btn btn-ghost-dark btn-small">Exportar CSV</button></div><div class="panel table-panel"><table class="client-table"><thead><tr><th>Cliente</th><th>Contacto</th><th>Última visita</th><th>Visitas</th><th>Gasto</th><th>Estado</th></tr></thead><tbody id="clientTableBody"></tbody></table></div></div>
+      <div class="crm-tab" data-crm-content="services"><div class="service-admin-grid" id="serviceAdminGrid"></div></div>
+    </div>
+  </section>
+  <script src="app.js"></script>
+</body>
+</html>
