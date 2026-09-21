@@ -1,81 +1,542 @@
-const services = [
-  {id:'cut', num:'01', name:'Corte clásico', duration:45, price:8, desc:'Diagnóstico, corte, acabado y styling.'},
-  {id:'beard', num:'02', name:'Barba & perfilado', duration:30, price:6, desc:'Perfilado preciso, toalla caliente y acabado.'},
-  {id:'combo', num:'03', name:'Corte + barba', duration:60, price:12, desc:'Servicio completo para renovar tu imagen.'},
-  {id:'premium', num:'04', name:'Ritual Noble', duration:75, price:18, desc:'Corte, barba, facial express y styling premium.'}
-];
-const barbers = [
-  {id:'mateo', initials:'MR', name:'Mateo Rojas', specialty:'Fades · textura', rating:'4.9'},
-  {id:'daniel', initials:'DG', name:'Daniel Guevara', specialty:'Clásico · barba', rating:'4.9'},
-  {id:'sebastian', initials:'SC', name:'Sebastián C.', specialty:'Diseño · tendencias', rating:'4.8'}
-];
-const baseClients = [
-  {name:'Carlos Andrade', phone:'098 420 1182', email:'carlos@email.com', last:'18 sep', visits:8, spent:86, status:'Activo'},
-  {name:'Diego Pozo', phone:'099 118 7702', email:'diego@email.com', last:'17 sep', visits:5, spent:54, status:'Activo'},
-  {name:'Andrés Ruiz', phone:'096 721 4050', email:'', last:'14 sep', visits:3, spent:32, status:'Activo'},
-  {name:'Mateo Herrera', phone:'098 332 6104', email:'', last:'26 ago', visits:6, spent:70, status:'Reactivar'},
-  {name:'Luis Acosta', phone:'099 525 9130', email:'luis@email.com', last:'22 ago', visits:2, spent:20, status:'Reactivar'}
-];
-const seedBookings = [
-  {id:'b1',name:'Carlos Andrade',phone:'098 420 1182',service:'combo',barber:'mateo',date:dateISO(0),time:'10:00',status:'Confirmada'},
-  {id:'b2',name:'Diego Pozo',phone:'099 118 7702',service:'cut',barber:'daniel',date:dateISO(0),time:'11:30',status:'Confirmada'},
-  {id:'b3',name:'Andrés Ruiz',phone:'096 721 4050',service:'premium',barber:'sebastian',date:dateISO(0),time:'14:00',status:'Pendiente'},
-  {id:'b4',name:'Kevin López',phone:'098 911 4401',service:'beard',barber:'mateo',date:dateISO(0),time:'16:30',status:'Confirmada'},
-  {id:'b5',name:'Jorge Mena',phone:'095 383 0021',service:'cut',barber:'daniel',date:dateISO(1),time:'09:30',status:'Confirmada'}
-];
-function dateISO(offset=0){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+offset);return d.toISOString().slice(0,10)}
-function loadBookings(){try{return JSON.parse(localStorage.getItem('noble_bookings'))||seedBookings}catch{return seedBookings}}
-let bookings=loadBookings();
-let bookingState={step:1,service:null,barber:null,date:null,time:null};
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const money=n=>`$${Number(n).toFixed(0)}`;
-const getService=id=>services.find(s=>s.id===id);
-const getBarber=id=>barbers.find(b=>b.id===id);
-const niceDate=iso=>new Intl.DateTimeFormat('es-EC',{weekday:'short',day:'numeric',month:'short'}).format(new Date(iso+'T12:00:00'));
-const initials=name=>name.split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase();
-function renderPublic(){
-  $('#serviceGrid').innerHTML=services.map(s=>`<article class="service-card"><span class="service-num">${s.num}</span><button aria-label="Reservar ${s.name}" data-book-service="${s.id}">↗</button><h3>${s.name}</h3><p>${s.desc}</p><div class="service-meta"><span>${s.duration} min</span><strong>${money(s.price)}</strong></div></article>`).join('');
-  const teamImages={mateo:'assets/mateo.webp',daniel:'assets/daniel.webp',sebastian:'assets/sebastian.webp'};
-  $('#teamGrid').innerHTML=barbers.map((b,i)=>`<article class="team-card"><div class="team-photo"><img src="${teamImages[b.id]}" alt="${b.name}, barbero de Noble Barber Studio"></div><div class="team-info"><div><h3>${b.name}</h3><p>${b.specialty} · ★ ${b.rating}</p></div><button aria-label="Reservar con ${b.name}" data-book-barber="${b.id}">↗</button></div></article>`).join('');
+/* Sitio público y flujo de reserva. */
+
+const $ = sel => document.querySelector(sel);
+const $$ = sel => [...document.querySelectorAll(sel)];
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hasGsap = typeof gsap !== 'undefined';
+
+let bookings = Store.bookings();
+let flow = { step: 1, service: null, barber: null, date: null, time: null };
+let lastFocused = null;
+
+/* ---------- Disponibilidad ---------- */
+
+const hasBooking = (date, time, barberId) =>
+  bookings.some(b => b.date === date && b.time === time && b.barber === barberId);
+
+function isTaken(date, time, barberId) {
+  if (barberId) return hasBooking(date, time, barberId);
+  /* Sin barbero elegido el turno sigue disponible mientras quede uno libre. */
+  return BARBERS.every(b => hasBooking(date, time, b.id));
 }
-function renderBookingChoices(){
-  $('#bookingServices').innerHTML=services.map(s=>`<button class="booking-option ${bookingState.service===s.id?'selected':''}" data-select-service="${s.id}"><span class="booking-option-icon">${s.num}</span><span class="booking-option-main"><strong>${s.name}</strong><small>${s.duration} min · ${s.desc}</small></span><span class="booking-option-price">${money(s.price)}</span></button>`).join('');
-  $('#bookingBarbers').innerHTML=`<button class="booking-option ${bookingState.barber==='any'?'selected':''}" data-select-barber="any"><span class="booking-option-icon">↯</span><span class="booking-option-main"><strong>Primero disponible</strong><small>La opción con menor tiempo de espera</small></span><span class="booking-option-price">Recomendado</span></button>`+barbers.map(b=>`<button class="booking-option ${bookingState.barber===b.id?'selected':''}" data-select-barber="${b.id}"><span class="booking-option-icon">${b.initials}</span><span class="booking-option-main"><strong>${b.name}</strong><small>${b.specialty} · ★ ${b.rating}</small></span><span class="booking-option-price">Elegir</span></button>`).join('');
-  renderDates();renderSummary();
+
+function freeBarberAt(date, time) {
+  return BARBERS
+    .filter(b => !hasBooking(date, time, b.id))
+    .map(b => ({ id: b.id, load: bookings.filter(x => x.date === date && x.barber === b.id).length }))
+    .sort((a, b) => a.load - b.load)[0]?.id || null;
 }
-function renderDates(){
-  const dates=[...Array(7)].map((_,i)=>{const iso=dateISO(i);const d=new Date(iso+'T12:00:00');return {iso,day:new Intl.DateTimeFormat('es-EC',{weekday:'short'}).format(d),num:d.getDate()}});
-  $('#dateStrip').innerHTML=dates.map(d=>`<button class="date-option ${bookingState.date===d.iso?'selected':''}" data-select-date="${d.iso}"><small>${d.day}</small><strong>${d.num}</strong></button>`).join('');
-  if(bookingState.date) renderTimes(); else $('#timeGrid').innerHTML='<span class="muted">Selecciona una fecha para ver horarios.</span>';
+
+function freeSlotsFor(date, barberId) {
+  return slotsForDate(date).filter(t => !isTaken(date, t, barberId));
 }
-function renderTimes(){
-  const slots=['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00'];
-  const barberId=bookingState.barber==='any'?null:bookingState.barber;
-  const occupied=t=>bookings.some(b=>b.date===bookingState.date&&b.time===t&&(!barberId||b.barber===barberId));
-  $('#timeGrid').innerHTML=slots.map(t=>`<button class="time-option ${bookingState.time===t?'selected':''}" data-select-time="${t}" ${occupied(t)?'disabled':''}>${t}</button>`).join('');
+
+function nextFreeSlot() {
+  const now = new Date();
+  for (let offset = 0; offset < 7; offset++) {
+    const date = dateISO(offset);
+    const free = freeSlotsFor(date, null).filter(t => {
+      if (offset > 0) return true;
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m > now.getHours() * 60 + now.getMinutes();
+    });
+    if (free.length) {
+      const label = offset === 0 ? 'Hoy' : offset === 1 ? 'Mañana' : niceDate(date);
+      return { date, time: free[0], label: `${label} ${free[0]}` };
+    }
+  }
+  return null;
 }
-function renderSummary(){
-  const s=getService(bookingState.service);const b=bookingState.barber==='any'?{name:'Primero disponible'}:getBarber(bookingState.barber);
-  $('#bookingSummary').innerHTML=`<div class="summary-row"><span>Servicio</span><strong>${s?s.name:'—'}</strong></div><div class="summary-row"><span>Profesional</span><strong>${b?b.name:'—'}</strong></div><div class="summary-row"><span>Fecha</span><strong>${bookingState.date?niceDate(bookingState.date):'—'}</strong></div><div class="summary-row"><span>Hora</span><strong>${bookingState.time||'—'}</strong></div>${s?`<div class="summary-row"><span>Total</span><strong>${money(s.price)}</strong></div>`:''}`;
+
+function leastBusyBarber(date) {
+  return BARBERS
+    .map(b => ({ id: b.id, load: bookings.filter(x => x.date === date && x.barber === b.id).length }))
+    .sort((a, b) => a.load - b.load)[0].id;
 }
-function showStep(step){bookingState.step=step;$$('.booking-step').forEach(el=>el.classList.toggle('active',Number(el.dataset.step)===step));$('#bookingSuccess').classList.remove('show');$('#stepCounter').textContent=`Paso ${step} de 4`;renderSummary()}
-function openBooking(prefill={}){$('#crmView').classList.remove('open');$('#crmView').setAttribute('aria-hidden','true');bookingState={step:1,service:prefill.service||null,barber:prefill.barber||null,date:null,time:null};$('#bookingForm').reset();renderBookingChoices();showStep(prefill.barber?2:prefill.service?2:1);$('#bookingOverlay').classList.add('open');$('#bookingOverlay').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
-function closeBooking(){$('#bookingOverlay').classList.remove('open');$('#bookingOverlay').setAttribute('aria-hidden','true');document.body.style.overflow=''}
-function nextFromChoice(type,id){bookingState[type]=id;if(type==='service')showStep(2);if(type==='barber'){bookingState.date=null;bookingState.time=null;renderDates();showStep(3)}renderBookingChoices()}
-function resolveBarber(){if(bookingState.barber!=='any')return bookingState.barber;const counts=barbers.map(b=>({id:b.id,n:bookings.filter(x=>x.date===bookingState.date&&x.barber===b.id).length})).sort((a,b)=>a.n-b.n);return counts[0].id}
-function submitBooking(e){e.preventDefault();if(!bookingState.service||!bookingState.barber||!bookingState.date||!bookingState.time)return;const data=Object.fromEntries(new FormData(e.target));const barber=resolveBarber();const newB={id:'b'+Date.now(),name:data.name.trim(),phone:data.phone.trim(),email:data.email.trim(),note:data.note.trim(),service:bookingState.service,barber,date:bookingState.date,time:bookingState.time,status:'Confirmada',createdAt:new Date().toISOString()};bookings.push(newB);localStorage.setItem('noble_bookings',JSON.stringify(bookings));$$('.booking-step').forEach(el=>el.classList.remove('active'));$('#stepCounter').textContent='Completado';$('#bookingSuccess').classList.add('show');const s=getService(newB.service),b=getBarber(newB.barber);$('#successText').textContent=`${data.name.split(' ')[0]}, tu cita quedó registrada correctamente.`;$('#successCard').innerHTML=`<div class="summary-row"><span>Servicio</span><strong>${s.name}</strong></div><div class="summary-row"><span>Con</span><strong>${b.name}</strong></div><div class="summary-row"><span>Fecha</span><strong>${niceDate(newB.date)} · ${newB.time}</strong></div><div class="summary-row"><span>Total</span><strong>${money(s.price)} · pago en local</strong></div>`;renderCRM();toast('Reserva creada y sincronizada con el CRM')}
-function openCRM(){closeBooking();renderCRM();$('#crmView').classList.add('open');$('#crmView').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';switchCRMTab('dashboard')}
-function closeCRM(){$('#crmView').classList.remove('open');$('#crmView').setAttribute('aria-hidden','true');document.body.style.overflow=''}
-function switchCRMTab(tab){$$('[data-crm-content]').forEach(x=>x.classList.toggle('active',x.dataset.crmContent===tab));$$('.crm-sidebar [data-crm-tab]').forEach(x=>x.classList.toggle('active',x.dataset.crmTab===tab));const titles={dashboard:'Resumen',agenda:'Agenda',clients:'Clientes',services:'Servicios'};$('#crmTitle').textContent=titles[tab]||'Resumen'}
-function allClients(){const map=new Map(baseClients.map(c=>[c.phone,{...c}]));bookings.forEach(b=>{const s=getService(b.service);if(map.has(b.phone)){const c=map.get(b.phone);if(b.createdAt){c.last=niceDate(b.date);c.visits+=1;c.spent+=s.price;c.status='Activo'}}else map.set(b.phone,{name:b.name,phone:b.phone,email:b.email||'',last:niceDate(b.date),visits:1,spent:s.price,status:'Nuevo'})});return [...map.values()]}
-function renderCRM(){const today=dateISO(0);const todayBookings=bookings.filter(b=>b.date===today);const revenue=todayBookings.reduce((a,b)=>a+getService(b.service).price,0);const clients=allClients();$('#todayLabel').textContent=new Intl.DateTimeFormat('es-EC',{weekday:'long',day:'numeric',month:'long'}).format(new Date());const metrics=[['Citas hoy',todayBookings.length,'+2 vs. ayer','◷'],['Ingresos estimados',money(revenue),'+18%','↗'],['Clientes CRM',clients.length,'+5 este mes','◎'],['Ocupación','76%','+12%','◇']];$('#metricGrid').innerHTML=metrics.map(m=>`<article class="metric-card"><small>${m[0]}</small><div class="metric-icon">${m[3]}</div><strong>${m[1]}</strong><span class="trend">${m[2]}</span></article>`).join('');const upcoming=[...bookings].filter(b=>b.date>=today).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,5);$('#upcomingList').innerHTML=upcoming.map(b=>`<div class="upcoming-item"><span class="upcoming-time">${b.time}</span><div class="upcoming-person"><strong>${b.name}</strong><small>${getService(b.service).name} · ${getBarber(b.barber).name}</small></div><span class="status-pill ${b.status==='Pendiente'?'pending':''}">${b.status}</span></div>`).join('')||'<p class="muted">Sin citas próximas.</p>';const heights=[48,65,54,82,72,91,63];const days=['L','M','X','J','V','S','D'];$('#barChart').innerHTML=heights.map((h,i)=>`<div class="bar-col"><i style="height:${h}%"></i><small>${days[i]}</small></div>`).join('');$('#recentCustomers').innerHTML=clients.slice(-4).reverse().map(c=>`<div class="recent-customer"><span class="mini-avatar">${initials(c.name)}</span><div><strong>${c.name}</strong><small>${c.visits} visitas · ${money(c.spent)}</small></div><span>${c.last}</span></div>`).join('');renderAgenda();renderClients(clients);renderAdminServices()}
-function renderAgenda(){const hours=['09:00','10:00','11:00','12:00','14:00','15:00','16:00','17:00','18:00','19:00'];const today=dateISO(0);$('#agendaGrid').innerHTML=hours.map(h=>`<div class="agenda-row"><span>${h}</span>${barbers.map(barber=>{const b=bookings.find(x=>x.date===today&&x.barber===barber.id&&x.time.startsWith(h.slice(0,2)));return `<div class="agenda-cell">${b?`<div class="booking-block"><strong>${b.time} · ${b.name}</strong><small>${getService(b.service).name}</small></div>`:''}</div>`}).join('')}</div>`).join('')}
-function renderClients(clients=allClients(),query=''){const q=query.toLowerCase();const filtered=clients.filter(c=>`${c.name} ${c.phone} ${c.email}`.toLowerCase().includes(q));$('#clientTableBody').innerHTML=filtered.map(c=>`<tr><td><div class="client-name"><span class="mini-avatar">${initials(c.name)}</span><div><strong>${c.name}</strong><small>ID · ${c.phone.slice(-4)}</small></div></div></td><td>${c.phone}<br><small>${c.email||'Sin correo'}</small></td><td>${c.last}</td><td>${c.visits}</td><td>${money(c.spent)}</td><td><span class="status-pill ${c.status==='Reactivar'?'pending':''}">${c.status}</span></td></tr>`).join('')}
-function renderAdminServices(){$('#serviceAdminGrid').innerHTML=services.map(s=>`<article class="admin-service"><span>${s.num} · ACTIVO</span><h3>${s.name}</h3><p>${s.desc}</p><footer><span>${s.duration} min</span><strong>${money(s.price)}</strong></footer></article>`).join('')}
-function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove('show'),2400)}
-renderPublic();renderBookingChoices();renderCRM();
-window.addEventListener('scroll',()=>$('#siteHeader').classList.toggle('scrolled',scrollY>35));
-document.addEventListener('click',e=>{const el=e.target.closest('button,a');if(!el)return;const action=el.dataset.action;if(action==='open-booking')openBooking();if(action==='close-booking')closeBooking();if(action==='open-crm')openCRM();if(action==='close-crm')closeCRM();if(action==='crm-new-booking')openBooking();if(action==='prev-step')showStep(Math.max(1,bookingState.step-1));if(el.dataset.bookService)openBooking({service:el.dataset.bookService});if(el.dataset.bookBarber)openBooking({barber:el.dataset.bookBarber});if(el.dataset.selectService)nextFromChoice('service',el.dataset.selectService);if(el.dataset.selectBarber)nextFromChoice('barber',el.dataset.selectBarber);if(el.dataset.selectDate){bookingState.date=el.dataset.selectDate;bookingState.time=null;renderDates();renderSummary()}if(el.dataset.selectTime){bookingState.time=el.dataset.selectTime;$$('.time-option').forEach(x=>x.classList.toggle('selected',x.dataset.selectTime===bookingState.time));renderSummary();showStep(4)}if(el.dataset.crmTab){switchCRMTab(el.dataset.crmTab)}});
-$('#bookingForm').addEventListener('submit',submitBooking);
-$('#clientSearch').addEventListener('input',e=>renderClients(allClients(),e.target.value));
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeBooking();closeCRM()}});
+
+/* ---------- Render del sitio público ---------- */
+
+function renderServices() {
+  $('#serviceList').innerHTML = SERVICES.map(s => `
+    <button class="service-row reveal" data-book-service="${s.id}">
+      <span class="service-name">${s.name}</span>
+      <span class="service-desc">${s.desc}</span>
+      <span class="service-time">${s.duration} min</span>
+      <span class="service-price">${money(s.price)}</span>
+      <span class="service-go" aria-hidden="true"><i class="ph ph-arrow-up-right"></i></span>
+    </button>
+  `).join('');
+}
+
+function renderTeam() {
+  $('#teamGrid').innerHTML = BARBERS.map(b => `
+    <button class="team-card reveal" data-book-barber="${b.id}" aria-label="Reservar con ${b.name}">
+      <span class="team-photo">
+        <img src="assets/img/${b.id}-1000.webp"
+             srcset="assets/img/${b.id}-420.webp 420w, assets/img/${b.id}-640.webp 640w, assets/img/${b.id}-1000.webp 1000w"
+             sizes="(max-width: 760px) 100vw, 33vw"
+             width="1122" height="1402" loading="lazy" decoding="async"
+             alt="${b.name}, barbero de Noble Barber Studio">
+      </span>
+      <span class="team-info">
+        <span>
+          <span class="team-name">${b.short}</span>
+          <span class="mono">${b.specialty}</span>
+        </span>
+        <span class="team-rating">${b.rating}</span>
+      </span>
+    </button>
+  `).join('');
+}
+
+function renderMarquee() {
+  const items = [
+    { icon: 'ph-star', value: '4.8', label: 'en Google' },
+    { icon: 'ph-scissors', value: '1.247', label: 'citas atendidas' },
+    { icon: 'ph-users-three', value: '3', label: 'barberos en agenda' },
+    { icon: 'ph-lightning', value: '40s', label: 'para reservar' },
+    { icon: 'ph-phone-slash', value: 'Cero', label: 'llamadas' }
+  ];
+  const html = items.map(i => `
+    <span class="marquee-item"><i class="ph ${i.icon}"></i><b>${i.value}</b> ${i.label}</span>
+  `).join('');
+  $('#marqueeTrack').innerHTML = html + html;
+}
+
+function renderNextSlot() {
+  const slot = nextFreeSlot();
+  $('#nextSlot').textContent = slot ? slot.label : 'Agenda completa';
+}
+
+/* ---------- Reserva: render de pasos ---------- */
+
+function renderStepServices() {
+  $('#stepServices').innerHTML = SERVICES.map(s => `
+    <button class="option ${flow.service === s.id ? 'selected' : ''}" data-pick-service="${s.id}">
+      <span class="option-mark">${s.duration}m</span>
+      <span class="option-main">
+        <strong>${s.name}</strong>
+        <small>${s.desc}</small>
+      </span>
+      <span class="option-value">${money(s.price)}</span>
+    </button>
+  `).join('');
+}
+
+function renderStepBarbers() {
+  const date = flow.date || dateISO(0);
+  const fastest = leastBusyBarber(date);
+  const fastestName = getBarber(fastest).short;
+
+  $('#stepBarbers').innerHTML = `
+    <button class="option ${flow.barber === 'any' ? 'selected' : ''}" data-pick-barber="any">
+      <span class="option-mark"><i class="ph ph-lightning" aria-hidden="true"></i></span>
+      <span class="option-main">
+        <strong>Primero disponible</strong>
+        <small>Ahora mismo sería ${fastestName}</small>
+      </span>
+      <span class="option-value">Recomendado</span>
+    </button>
+  ` + BARBERS.map(b => {
+    const free = freeSlotsFor(date, b.id).length;
+    return `
+      <button class="option ${flow.barber === b.id ? 'selected' : ''}" data-pick-barber="${b.id}">
+        <span class="option-mark">${b.initials}</span>
+        <span class="option-main">
+          <strong>${b.name}</strong>
+          <small>${b.specialty}</small>
+        </span>
+        <span class="option-value">${free} libres</span>
+      </button>
+    `;
+  }).join('');
+}
+
+function renderDates() {
+  const days = [...Array(7)].map((_, i) => {
+    const iso = dateISO(i);
+    const d = new Date(iso + 'T12:00:00');
+    return {
+      iso,
+      day: new Intl.DateTimeFormat('es-EC', { weekday: 'short' }).format(d).replace('.', ''),
+      num: d.getDate()
+    };
+  });
+
+  $('#dateStrip').innerHTML = days.map(d => {
+    const closed = isClosed(d.iso);
+    return `
+      <button class="date-btn ${flow.date === d.iso ? 'selected' : ''}" data-pick-date="${d.iso}"
+              ${closed ? 'disabled aria-disabled="true" title="El local cierra este dia"' : ''}>
+        <small>${d.day}</small>
+        <strong>${d.num}</strong>
+      </button>
+    `;
+  }).join('');
+
+  renderTimes();
+}
+
+function renderTimes() {
+  const wrap = $('#timeWrap');
+  if (!flow.date) {
+    wrap.innerHTML = '<p class="empty-hint">Selecciona una fecha para ver los horarios</p>';
+    return;
+  }
+
+  if (isClosed(flow.date)) {
+    wrap.innerHTML = '<p class="empty-hint">El local cierra este día. Elige otra fecha.</p>';
+    return;
+  }
+
+  const barberId = flow.barber === 'any' ? null : flow.barber;
+  const free = freeSlotsFor(flow.date, barberId);
+
+  if (!free.length) {
+    wrap.innerHTML = '<p class="empty-hint">Sin turnos libres este día. Prueba con otra fecha.</p>';
+    return;
+  }
+
+  wrap.innerHTML = `<div class="time-grid">${slotsForDate(flow.date).map(t => {
+    const taken = isTaken(flow.date, t, barberId);
+    return `
+      <button class="time-btn ${flow.time === t ? 'selected' : ''}" data-pick-time="${t}"
+              ${taken ? 'disabled aria-disabled="true"' : ''}>${t}</button>
+    `;
+  }).join('')}</div>`;
+}
+
+function renderSummary(target = '#summary') {
+  const service = getService(flow.service);
+  const barber = flow.barber === 'any' ? { name: 'Primero disponible' } : getBarber(flow.barber);
+  const node = $(target);
+  if (!node) return;
+
+  node.innerHTML = `
+    <div class="summary-row"><span>Servicio</span><strong>${service ? service.name : 'Por elegir'}</strong></div>
+    <div class="summary-row"><span>Barbero</span><strong>${barber ? barber.name : 'Por elegir'}</strong></div>
+    <div class="summary-row"><span>Fecha</span><strong>${flow.date ? niceDate(flow.date) : 'Por elegir'}</strong></div>
+    <div class="summary-row"><span>Hora</span><strong>${flow.time || 'Por elegir'}</strong></div>
+    ${service ? `<div class="summary-row total"><span>Total</span><strong>${money(service.price)}</strong></div>` : ''}
+  `;
+}
+
+/* ---------- Navegación entre pasos ---------- */
+
+function goToStep(step) {
+  flow.step = step;
+  $$('.step').forEach(el => el.classList.toggle('active', Number(el.dataset.step) === step));
+  $('#success').classList.remove('show');
+  $('#stepCount').textContent = `Paso ${step} de 4`;
+
+  const progress = $('#progress');
+  progress.setAttribute('aria-valuenow', String(step));
+  $$('#progress span').forEach((bar, i) => bar.classList.toggle('done', i < step));
+
+  renderSummary();
+
+  const active = $(`.step[data-step="${step}"]`);
+  if (active && hasGsap && !reduceMotion) {
+    gsap.fromTo(active, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out' });
+  }
+  $('.booking-body').scrollTop = 0;
+}
+
+function openBooking(prefill = {}) {
+  lastFocused = document.activeElement;
+  bookings = Store.bookings();
+  flow = { step: 1, service: prefill.service || null, barber: prefill.barber || null, date: null, time: null };
+
+  $('#bookingForm').reset();
+  clearErrors();
+  $('#success').classList.remove('show');
+
+  renderStepServices();
+  renderStepBarbers();
+  renderDates();
+
+  const overlay = $('#bookingOverlay');
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+
+  /* Si llega con servicio elegido pasa a escoger barbero.
+     Si llega desde una tarjeta del equipo el barbero ya esta puesto,
+     pero todavia falta el servicio, asi que empieza en el paso 1. */
+  goToStep(prefill.service ? 2 : 1);
+  closeMenu();
+
+  const firstOption = $('.step.active .option, .step.active input');
+  if (firstOption) firstOption.focus({ preventScroll: true });
+}
+
+function closeBooking() {
+  const overlay = $('#bookingOverlay');
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  if (lastFocused) lastFocused.focus({ preventScroll: true });
+}
+
+/* ---------- Validacion del formulario ---------- */
+
+function setError(field, message) {
+  const node = $(`[data-error-for="${field}"]`);
+  if (node) node.textContent = message;
+  const input = $(`[name="${field}"]`);
+  if (input) input.closest('.field').classList.toggle('invalid', Boolean(message));
+}
+
+function clearErrors() {
+  ['name', 'phone', 'email'].forEach(f => setError(f, ''));
+}
+
+function validate(data) {
+  clearErrors();
+  const errors = [];
+
+  if (!data.name.trim()) {
+    setError('name', 'Escribe tu nombre');
+    errors.push('name');
+  } else if (data.name.trim().length < 3) {
+    setError('name', 'Nombre demasiado corto');
+    errors.push('name');
+  }
+
+  const digits = data.phone.replace(/\D/g, '');
+  if (!digits) {
+    setError('phone', 'Necesitamos tu WhatsApp para confirmarte');
+    errors.push('phone');
+  } else if (digits.length < 9) {
+    setError('phone', 'Revisa el número, faltan dígitos');
+    errors.push('phone');
+  }
+
+  if (data.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email.trim())) {
+    setError('email', 'Ese correo no parece válido');
+    errors.push('email');
+  }
+
+  return errors;
+}
+
+function submitBooking(event) {
+  event.preventDefault();
+
+  /* Devuelve al paso que falta en vez de dar un aviso generico. */
+  const missing = !flow.service ? { step: 1, message: 'Elige primero un servicio' }
+    : !flow.barber ? { step: 2, message: 'Elige con quien te atiendes' }
+    : !flow.date || !flow.time ? { step: 3, message: 'Elige fecha y hora' }
+    : null;
+
+  if (missing) {
+    toast(missing.message, 'ph-warning');
+    goToStep(missing.step);
+    return;
+  }
+
+  const data = Object.fromEntries(new FormData(event.target));
+  const errors = validate(data);
+
+  if (errors.length) {
+    const firstInvalid = $(`[name="${errors[0]}"]`);
+    if (firstInvalid) firstInvalid.focus();
+    return;
+  }
+
+  /* El horario pudo ocuparse desde otra pestaña mientras el usuario escribía. */
+  bookings = Store.bookings();
+  const barber = flow.barber === 'any' ? freeBarberAt(flow.date, flow.time) : flow.barber;
+
+  if (!barber || isTaken(flow.date, flow.time, barber)) {
+    toast('Ese turno se acaba de ocupar, elige otro', 'ph-warning');
+    flow.time = null;
+    goToStep(3);
+    renderTimes();
+    return;
+  }
+
+  const booking = {
+    id: 'b' + Date.now(),
+    name: data.name.trim(),
+    phone: data.phone.trim(),
+    email: data.email.trim(),
+    note: data.note.trim(),
+    service: flow.service,
+    barber,
+    date: flow.date,
+    time: flow.time,
+    status: 'Confirmada',
+    createdAt: new Date().toISOString()
+  };
+
+  bookings.push(booking);
+  Store.save(bookings);
+
+  const service = getService(booking.service);
+  $$('.step').forEach(el => el.classList.remove('active'));
+  $('#stepCount').textContent = 'Reserva confirmada';
+  $$('#progress span').forEach(bar => bar.classList.add('done'));
+  $('#success').classList.add('show');
+  $('#successText').textContent = `${booking.name.split(' ')[0]}, te esperamos el ${niceDate(booking.date)} a las ${booking.time}.`;
+
+  $('#successSummary').innerHTML = `
+    <div class="summary-row"><span>Servicio</span><strong>${service.name}</strong></div>
+    <div class="summary-row"><span>Barbero</span><strong>${getBarber(booking.barber).name}</strong></div>
+    <div class="summary-row"><span>Cuándo</span><strong>${niceDate(booking.date)} ${booking.time}</strong></div>
+    <div class="summary-row total"><span>Total</span><strong>${money(service.price)}</strong></div>
+  `;
+
+  if (hasGsap && !reduceMotion) {
+    gsap.fromTo('#success', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
+  }
+
+  renderNextSlot();
+  toast('Reserva registrada en la agenda del local', 'ph-check-circle');
+}
+
+/* ---------- Menu movil ---------- */
+
+function openMenu() {
+  $('#mobileMenu').classList.add('open');
+  $('#burger').setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMenu() {
+  $('#mobileMenu').classList.remove('open');
+  $('#burger').setAttribute('aria-expanded', 'false');
+  if (!$('#bookingOverlay').classList.contains('open')) document.body.style.overflow = '';
+}
+
+/* ---------- Toast ---------- */
+
+let toastTimer;
+function toast(message, icon = 'ph-check-circle') {
+  const node = $('#toast');
+  node.innerHTML = `<i class="ph ${icon}" aria-hidden="true"></i> ${message}`;
+  node.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => node.classList.remove('show'), 3200);
+}
+
+/* ---------- Movimiento ---------- */
+
+function initMotion() {
+  if (!hasGsap || reduceMotion) {
+    document.body.classList.add('no-motion');
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* Estado del nav sin escuchar scroll a mano. */
+  ScrollTrigger.create({
+    start: 'top -40',
+    end: 99999,
+    onToggle: self => $('#nav').classList.toggle('is-stuck', self.isActive)
+  });
+
+  /* Entrada del hero: establece jerarquia de lectura. */
+  gsap.from('.hero-copy h1', { opacity: 0, y: 26, duration: 0.7, ease: 'power3.out' });
+  gsap.from('.hero-copy .lead', { opacity: 0, y: 18, duration: 0.6, delay: 0.12, ease: 'power3.out' });
+  gsap.from('.hero-actions', { opacity: 0, y: 18, duration: 0.6, delay: 0.2, ease: 'power3.out' });
+  gsap.from('.slot-card', { opacity: 0, x: -20, duration: 0.6, delay: 0.42, ease: 'power3.out' });
+
+  /* Reveals por sección: revelan el contenido en el orden en que se lee. */
+  $$('.reveal').forEach(el => {
+    gsap.fromTo(el,
+      { opacity: 0, y: 22 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+        onComplete: () => el.classList.add('is-revealed')
+      }
+    );
+  });
+}
+
+/* ---------- Eventos ---------- */
+
+function handleClick(event) {
+  const el = event.target.closest('button, a');
+  if (!el) return;
+
+  const action = el.dataset.action;
+  if (action === 'open-booking') openBooking();
+  if (action === 'close-booking') closeBooking();
+  if (action === 'prev-step') goToStep(Math.max(1, flow.step - 1));
+  if (action === 'close-menu') closeMenu();
+
+  if (el.dataset.bookService) openBooking({ service: el.dataset.bookService });
+  if (el.dataset.bookBarber) openBooking({ barber: el.dataset.bookBarber });
+
+  if (el.dataset.pickService) {
+    flow.service = el.dataset.pickService;
+    renderStepServices();
+    renderStepBarbers();
+    /* El barbero puede venir ya elegido desde la seccion de equipo. */
+    if (flow.barber) {
+      renderDates();
+      goToStep(3);
+    } else {
+      goToStep(2);
+    }
+  }
+
+  if (el.dataset.pickBarber) {
+    flow.barber = el.dataset.pickBarber;
+    flow.time = null;
+    renderStepBarbers();
+    renderDates();
+    goToStep(3);
+  }
+
+  if (el.dataset.pickDate) {
+    flow.date = el.dataset.pickDate;
+    flow.time = null;
+    renderStepBarbers();
+    renderDates();
+    renderSummary();
+  }
+
+  if (el.dataset.pickTime) {
+    flow.time = el.dataset.pickTime;
+    renderTimes();
+    renderSummary();
+    goToStep(4);
+  }
+}
+
+function init() {
+  renderServices();
+  renderTeam();
+  renderMarquee();
+  renderNextSlot();
+  renderStepServices();
+  renderStepBarbers();
+  renderDates();
+  renderSummary();
+
+  document.addEventListener('click', handleClick);
+  $('#bookingForm').addEventListener('submit', submitBooking);
+  $('#burger').addEventListener('click', openMenu);
+
+  $('#bookingOverlay').addEventListener('click', event => {
+    if (event.target === $('#bookingOverlay')) closeBooking();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    closeBooking();
+    closeMenu();
+  });
+
+  initMotion();
+}
+
+init();

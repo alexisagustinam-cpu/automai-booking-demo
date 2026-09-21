@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0B0B0C" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Acceso equipo | Noble Barber Studio</title>
+  <meta name="description" content="Panel interno de Noble Barber Studio. Acceso restringido al equipo." />
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="crm.css" />
+</head>
+<body class="crm-body">
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Acceso -->
+  <section class="login" id="login">
+    <div class="login-visual">
+      <img src="assets/img/hero-1100.webp" alt="" aria-hidden="true">
+      <span class="brand">
+        <span class="brand-mark" aria-hidden="true">N</span>
+        <span class="brand-word">Noble</span>
+      </span>
+      <div>
+        <h1>Panel<em>del negocio.</em></h1>
+        <p>Agenda, clientes y métricas del local. El administrador ve todo el negocio, cada barbero ve su propia agenda.</p>
+      </div>
+    </div>
+
+    <div class="login-form-wrap">
+      <form class="login-form" id="loginForm" novalidate>
+        <h2>Acceso equipo</h2>
+        <p>Ingresa con las credenciales que te asignó el local.</p>
+
+        <div class="login-alert" id="loginAlert" role="alert">
+          <i class="ph ph-warning-circle" aria-hidden="true"></i>
+          <span id="loginAlertText"></span>
+        </div>
+
+        <div class="field">
+          <label for="user">Usuario</label>
+          <input id="user" name="user" autocomplete="username" autocapitalize="none" spellcheck="false">
+          <span class="field-error" data-error-for="user"></span>
+        </div>
+
+        <div class="field">
+          <label for="pass">Clave</label>
+          <input id="pass" name="pass" type="password" autocomplete="current-password">
+          <span class="field-error" data-error-for="pass"></span>
+        </div>
+
+        <button class="btn btn-primary" type="submit" id="loginBtn">
+          Entrar <i class="ph ph-arrow-right" aria-hidden="true"></i>
+        </button>
+
+        <div class="login-hint">
+          <h4>Credenciales de la demo</h4>
+          <ul>
+            <li><b>admin</b> <span>admin123</span></li>
+            <li><b>mateo</b> <span>mateo123</span></li>
+            <li><b>daniel</b> <span>daniel123</span></li>
+            <li><b>sebastian</b> <span>sebastian123</span></li>
+          </ul>
+        </div>
+
+        <a class="login-back" href="index.html">
+          <i class="ph ph-arrow-left" aria-hidden="true"></i> Volver al sitio
+        </a>
+      </form>
+    </div>
+  </section>
+
+  <!-- Panel -->
+  <div class="panel-shell" id="panel">
+    <aside class="side">
+      <div class="side-brand">
+        <span class="brand-mark" aria-hidden="true">N</span>
+        <div class="side-brand-copy">
+          <span class="brand-word">Noble</span>
+          <small>Business OS</small>
+        </div>
+      </div>
+
+      <div class="side-user">
+        <strong id="userName"></strong>
+        <span id="userRole"></span>
+      </div>
+
+      <nav class="side-nav" id="sideNav" aria-label="Secciones del panel"></nav>
+
+      <div class="side-foot">
+        <button class="btn btn-outline btn-sm" id="logoutBtn">
+          <i class="ph ph-sign-out" aria-hidden="true"></i> <span>Salir</span>
+        </button>
+        <a class="btn btn-ghost btn-sm" href="index.html">
+          <i class="ph ph-arrow-square-out" aria-hidden="true"></i> <span>Ver sitio</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="panel-main">
+      <header class="panel-head">
+        <div>
+          <span class="mono" id="todayLabel"></span>
+          <h2 id="sectionTitle">Resumen</h2>
+        </div>
+        <div class="panel-head-actions" id="headActions"></div>
+      </header>
+
+      <div class="panel-body active" id="panelBody"></div>
+    </main>
+  </div>
+
+  <script src="data.js" defer></script>
+  <script src="crm.js" defer></script>
+</body>
+</html>
