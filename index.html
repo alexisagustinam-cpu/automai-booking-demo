@@ -3,176 +3,270 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0B0B0C" />
-  <title>Noble Barber Studio | Reservas online en Ibarra</title>
-  <meta name="description" content="Reserva tu corte en Noble Barber Studio. Elige servicio, barbero y hora disponible sin llamadas. Demo de reservas y CRM por AutomAI Labs." />
+  <meta name="theme-color" content="#090909" />
+  <title>Noble Barber Studio | Grooming masculino en Ibarra</title>
+  <meta name="description" content="Más que un corte, una mejor versión de ti. Grooming masculino con atención personalizada y reserva sin esperas en Ibarra, Ecuador." />
 
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/light/style.css">
   <link rel="stylesheet" href="styles.css" />
-  <link rel="preload" as="image" href="assets/img/hero-1600.webp" imagesrcset="assets/img/hero-700.webp 700w, assets/img/hero-1100.webp 1100w, assets/img/hero-1600.webp 1600w" imagesizes="(max-width: 1080px) 100vw, 45vw" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/img/hero-1600.webp" imagesrcset="assets/img/hero-700.webp 700w, assets/img/hero-1100.webp 1100w, assets/img/hero-1600.webp 1600w" imagesizes="(max-width: 1024px) 100vw, 50vw" fetchpriority="high">
 </head>
 <body>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <header class="nav" id="nav">
-    <a class="brand" href="#inicio" aria-label="Noble Barber Studio, inicio">
-      <span class="brand-mark" aria-hidden="true">N</span>
-      <span class="brand-word">Noble</span>
+    <a class="wordmark" href="#inicio" aria-label="Noble Barber Studio, inicio">
+        <!-- Reservado para /assets/brand/noble-mark.svg: al existir, reemplaza al wordmark-type -->
+      <span class="wordmark-type">
+        <b>NOBLE</b>
+        <span>Barber Studio</span>
+      </span>
     </a>
 
     <nav class="nav-links" aria-label="Principal">
       <a href="#servicios">Servicios</a>
       <a href="#equipo">Equipo</a>
-      <a href="#reserva">Cómo funciona</a>
+      <a href="#experiencia">Experiencia</a>
     </nav>
 
     <div class="nav-right">
-      <span class="open-state"><i class="live-dot" aria-hidden="true"></i> Abierto hasta 19:00</span>
-      <button class="btn btn-primary btn-sm" data-action="open-booking">Reservar cita</button>
+      <span class="open-state"><i class="dot" aria-hidden="true"></i> Abierto hasta 19:00</span>
+      <button class="btn btn-primary btn-sm" data-action="open-booking">
+        Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+      </button>
       <button class="nav-burger" id="burger" aria-label="Abrir menú" aria-expanded="false">
-        <i class="ph ph-list" aria-hidden="true"></i>
+        <i class="ph-light ph-list" aria-hidden="true"></i>
       </button>
     </div>
   </header>
 
   <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-head">
-      <span class="brand-word">Noble</span>
+      <span class="wordmark">
+        <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
+      </span>
       <button class="nav-burger" data-action="close-menu" aria-label="Cerrar menú" style="display:grid">
-        <i class="ph ph-x" aria-hidden="true"></i>
+        <i class="ph-light ph-x" aria-hidden="true"></i>
       </button>
     </div>
     <nav aria-label="Menú móvil">
       <a href="#servicios" data-action="close-menu">Servicios</a>
       <a href="#equipo" data-action="close-menu">Equipo</a>
-      <a href="#reserva" data-action="close-menu">Cómo funciona</a>
+      <a href="#experiencia" data-action="close-menu">Experiencia</a>
     </nav>
-    <button class="btn btn-primary" data-action="open-booking">Reservar cita</button>
+    <button class="btn btn-primary" data-action="open-booking">
+      Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+    </button>
   </div>
 
   <main>
+    <!-- Hero -->
     <section class="hero" id="inicio">
       <div class="hero-copy">
-        <h1 class="display">Cortes que<em>se notan.</em></h1>
-        <p class="lead">Elige servicio, barbero y hora disponible. Sin llamadas, sin esperas, confirmación inmediata.</p>
-        <div class="hero-actions">
+        <span class="eyebrow" id="heroEyebrow">Ibarra · Ecuador</span>
+        <h1 class="serif hero-title" id="heroTitle">
+          <span class="line"><span>Más que un corte,</span></span>
+          <span class="line"><span><em>una mejor versión de ti.</em></span></span>
+        </h1>
+        <p class="lead" id="heroLead">Grooming masculino con atención personalizada y reserva sin esperas.</p>
+
+        <div class="hero-actions" id="heroActions">
           <button class="btn btn-primary" data-action="open-booking">
-            Reservar cita <i class="ph ph-arrow-up-right" aria-hidden="true"></i>
+            Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
           </button>
-          <a class="btn btn-outline" href="#servicios">Ver servicios</a>
+          <a class="btn btn-secondary" href="#servicios">Ver servicios</a>
         </div>
+
       </div>
 
       <div class="hero-visual">
-        <div class="hero-photo">
+        <div class="hero-photo" id="heroPhoto">
           <picture>
             <source srcset="assets/img/hero-700.webp 700w, assets/img/hero-1100.webp 1100w, assets/img/hero-1600.webp 1600w"
-                    sizes="(max-width: 1080px) 100vw, 45vw" type="image/webp">
+                    sizes="(max-width: 1024px) 100vw, 50vw" type="image/webp">
             <img src="assets/img/hero-1600.webp" width="1672" height="941"
                  alt="Barbero perfilando la barba de un cliente en el salón de Noble Barber Studio"
                  fetchpriority="high" decoding="async">
           </picture>
-          <div class="slot-card">
-            <div class="slot-card-body">
-              <span class="mono">Próximo espacio libre</span>
-              <strong id="nextSlot">Hoy 16:00</strong>
-            </div>
-            <button data-action="open-booking">Tomar turno</button>
+
+          <div class="slot-card" id="slotCard">
+            <span class="slot-card-label"><i class="dot" aria-hidden="true"></i> Próximo espacio</span>
+            <strong id="nextSlot">Hoy · 16:30</strong>
+            <button class="btn btn-primary" data-action="open-booking">
+              Reservar <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+            </button>
           </div>
+        </div>
+      </div>
+
+      <div class="hero-stats" id="heroStats">
+        <div class="hero-stat">
+          <b>+1.200</b>
+          <span>Citas gestionadas</span>
+        </div>
+        <div class="hero-stat">
+          <b>4.9 <i class="ph-light ph-star" aria-hidden="true"></i></b>
+          <span>Experiencia promedio</span>
+        </div>
+        <div class="hero-stat">
+          <b>0 min</b>
+          <span>Espera con reserva</span>
         </div>
       </div>
     </section>
 
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track" id="marqueeTrack"></div>
-    </div>
+    <!-- The Noble Experience -->
+    <section class="experience" id="experiencia">
+      <div class="experience-inner">
+        <div class="reveal">
+          <span class="eyebrow">The Noble Experience</span>
+          <h2 class="serif">Tu tiempo también forma parte del servicio.</h2>
+          <p class="lead experience-note">No vendemos minutos de silla. Cuidamos la experiencia completa, desde que reservas hasta que te ves en el espejo.</p>
+        </div>
 
+        <div class="experience-list">
+          <article class="experience-item reveal">
+            <b>01</b>
+            <div>
+              <h3>Precisión</h3>
+              <p>Cada detalle importa.</p>
+            </div>
+          </article>
+          <article class="experience-item reveal">
+            <b>02</b>
+            <div>
+              <h3>Tiempo</h3>
+              <p>Reserva. Llega. Te atendemos.</p>
+            </div>
+          </article>
+          <article class="experience-item reveal">
+            <b>03</b>
+            <div>
+              <h3>Consistencia</h3>
+              <p>Tu historial acompaña cada visita.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Servicios -->
     <section class="section" id="servicios">
       <div class="section-head reveal">
-        <span class="section-label">Servicios</span>
-        <h2 class="display">Menos espera.<br>Más presencia.</h2>
-        <p class="lead">Duración definida y precio visible antes de reservar. Elige y pasa directo a la disponibilidad real.</p>
+        <span class="eyebrow">Servicios</span>
+        <h2 class="serif">Cuatro formas de verte mejor.</h2>
+        <p class="lead">Duración y precio visibles antes de reservar. Al elegir uno pasas directo a la disponibilidad real del estudio.</p>
       </div>
       <div class="service-list" id="serviceList"></div>
     </section>
 
+    <!-- Equipo -->
     <section class="team" id="equipo">
       <div class="team-inner">
         <div class="section-head reveal">
-          <h2 class="display">Elige quién<br>te atiende.</h2>
-          <p class="lead">Cada barbero administra su propia agenda. Reserva con tu favorito o toma el primero disponible.</p>
+          <span class="eyebrow">Nuestro equipo</span>
+          <h2 class="serif">Elige quién te atiende.</h2>
+          <p class="lead">Cada profesional administra su propia agenda. Reserva con tu barbero de confianza o toma el primero disponible.</p>
         </div>
         <div class="team-grid" id="teamGrid"></div>
       </div>
     </section>
 
-    <section class="process" id="reserva">
-      <div class="process-inner">
-        <div class="section-head reveal">
-          <span class="section-label">Cómo funciona</span>
-          <h2 class="display">De la duda<br>a la cita.</h2>
+    <!-- The Noble Ritual -->
+    <section class="ritual" id="ritual">
+      <div class="ritual-bg" aria-hidden="true">
+        <img src="assets/img/daniel-1000.webp" alt="" loading="lazy" decoding="async">
+      </div>
+
+      <div class="ritual-inner">
+        <div class="ritual-head reveal">
+          <span class="eyebrow">The Noble Ritual</span>
+          <h2 class="serif">Cuatro momentos, una misma intención.</h2>
+          <p class="lead">Así se siente una visita a Noble. El detalle de la reserva lo resolvemos juntos en el siguiente paso.</p>
+          <div class="ritual-foot">
+            <button class="btn btn-primary" data-action="open-booking">
+              Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
-        <div class="process-grid reveal">
-          <article class="process-step">
-            <span class="mono">01</span>
-            <h3>Elige servicio</h3>
-            <p>Precio y duración a la vista, sin preguntar.</p>
+
+        <div class="ritual-steps" id="ritualSteps">
+          <article class="ritual-step">
+            <b>01</b>
+            <div>
+              <h3>Consult</h3>
+              <p>La conversación.</p>
+            </div>
           </article>
-          <article class="process-step">
-            <span class="mono">02</span>
-            <h3>Elige barbero</h3>
-            <p>O deja que el sistema asigne al primero libre.</p>
+          <article class="ritual-step">
+            <b>02</b>
+            <div>
+              <h3>Cut</h3>
+              <p>La precisión.</p>
+            </div>
           </article>
-          <article class="process-step">
-            <span class="mono">03</span>
-            <h3>Elige hora</h3>
-            <p>Solo aparecen los turnos realmente libres.</p>
+          <article class="ritual-step">
+            <b>03</b>
+            <div>
+              <h3>Detail</h3>
+              <p>El acabado.</p>
+            </div>
           </article>
-          <article class="process-step">
-            <span class="mono">04</span>
-            <h3>Confirma</h3>
-            <p>La cita entra directo a la agenda del local.</p>
+          <article class="ritual-step">
+            <b>04</b>
+            <div>
+              <h3>Finish</h3>
+              <p>Tu presencia.</p>
+            </div>
           </article>
         </div>
       </div>
     </section>
 
+    <!-- Cierre -->
     <section class="closing">
-      <h2 class="display">Tu próximo corte<br>ya tiene hora.</h2>
-      <button class="btn btn-invert" data-action="open-booking">
-        Reservar cita <i class="ph ph-arrow-up-right" aria-hidden="true"></i>
-      </button>
-      <p>Demo conceptual de reservas y CRM por AutomAI Labs</p>
+      <div class="closing-bg" aria-hidden="true">
+        <img src="assets/img/hero-1100.webp" alt="" loading="lazy" decoding="async">
+      </div>
+      <div class="closing-inner reveal">
+        <div class="closing-rule"></div>
+        <h2 class="serif">Tu próxima cita<br><em>ya tiene hora.</em></h2>
+        <button class="btn btn-primary" data-action="open-booking">
+          Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+        </button>
+        <p class="closing-note">Ibarra · Ecuador</p>
+      </div>
     </section>
   </main>
 
   <footer class="footer">
     <div class="footer-grid">
       <div class="footer-col">
-        <a class="brand" href="#inicio" aria-label="Noble Barber Studio, inicio">
-          <span class="brand-mark" aria-hidden="true">N</span>
-          <span class="brand-word">Noble</span>
-        </a>
-        <p style="margin-top:16px;color:var(--bone-dim)">Barbería y reservas online en Ibarra, Ecuador.</p>
+        <span class="wordmark">
+          <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
+        </span>
+        <p class="footer-tagline">Más que un corte, una mejor versión de ti.</p>
       </div>
       <div class="footer-col">
         <h4>Horario</h4>
         <p>Lunes a viernes, 09:00 a 19:00</p>
         <p>Sábado, 09:00 a 17:00</p>
+        <p>Domingo cerrado</p>
       </div>
       <div class="footer-col">
-        <h4>Contacto</h4>
+        <h4>Estudio</h4>
         <a href="tel:+593984201182">098 420 1182</a>
         <p>Av. Mariano Acosta y Ricardo Sánchez</p>
+        <p>Ibarra, Ecuador</p>
       </div>
       <div class="footer-col">
         <h4>Sistema</h4>
         <a href="negocio.html">Acceso equipo</a>
-        <a href="#reserva">Cómo funciona</a>
+        <a href="#experiencia">La experiencia</a>
       </div>
     </div>
     <div class="footer-note">
@@ -181,60 +275,84 @@
     </div>
   </footer>
 
+  <!-- Barra fija de reserva en móvil -->
+  <div class="sticky-cta" id="stickyCta">
+    <button class="btn btn-primary" data-action="open-booking">
+      Reservar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
+    </button>
+  </div>
+
   <!-- Reserva -->
   <div class="overlay" id="bookingOverlay" role="dialog" aria-modal="true" aria-labelledby="bookingTitle" aria-hidden="true">
     <div class="booking">
       <aside class="booking-aside">
-        <div>
-          <h2 id="bookingTitle">Tu cita<em>en minutos.</em></h2>
-        </div>
+        <span class="wordmark">
+          <span class="wordmark-type"><b>NOBLE</b><span>Barber Studio</span></span>
+        </span>
+        <h2 class="booking-aside-title" id="bookingTitle">Tu cita,<br><em>en cuatro pasos.</em></h2>
         <div class="summary" id="summary"></div>
+        <p class="booking-aside-note">Confirmación inmediata por WhatsApp. Pago en el estudio.</p>
       </aside>
 
       <div class="booking-main">
         <div class="booking-top">
-          <span class="step-count" id="stepCount">Paso 1 de 4</span>
           <div class="progress" id="progress" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-label="Progreso de la reserva">
-            <span class="done"></span><span></span><span></span><span></span>
+            <span class="progress-step active" data-progress="1"><b>01</b><span>Servicio</span></span>
+            <span class="progress-line"></span>
+            <span class="progress-step" data-progress="2"><b>02</b><span>Profesional</span></span>
+            <span class="progress-line"></span>
+            <span class="progress-step" data-progress="3"><b>03</b><span>Fecha y hora</span></span>
+            <span class="progress-line"></span>
+            <span class="progress-step" data-progress="4"><b>04</b><span>Tus datos</span></span>
           </div>
           <button class="icon-btn" data-action="close-booking" aria-label="Cerrar reserva">
-            <i class="ph ph-x" aria-hidden="true"></i>
+            <i class="ph-light ph-x" aria-hidden="true"></i>
           </button>
         </div>
 
-        <div class="booking-body">
+        <div class="booking-body" id="bookingBody" tabindex="-1">
           <section class="step active" data-step="1">
-            <h3>Qué quieres reservar</h3>
-            <p>Selecciona un servicio para ver la disponibilidad.</p>
+            <div class="step-head">
+              <h3>¿Qué experiencia buscas?</h3>
+              <p>Selecciona el servicio que mejor se adapte a ti.</p>
+            </div>
             <div class="options" id="stepServices"></div>
           </section>
 
           <section class="step" data-step="2">
-            <h3>Con quién</h3>
-            <p>Elige un barbero o toma la opción con menos espera.</p>
+            <div class="step-head">
+              <h3>¿Con quién te atiendes?</h3>
+              <p>Elige tu profesional o toma el primero disponible.</p>
+            </div>
             <div class="options" id="stepBarbers"></div>
             <div class="step-actions">
-              <button class="btn btn-ghost" data-action="prev-step">
-                <i class="ph ph-arrow-left" aria-hidden="true"></i> Atras
+              <button class="btn btn-quiet" data-action="prev-step">
+                <i class="ph-light ph-arrow-left" aria-hidden="true"></i> Atrás
               </button>
             </div>
           </section>
 
           <section class="step" data-step="3">
-            <h3>Fecha y hora</h3>
-            <p>Los horarios ocupados quedan bloqueados automáticamente.</p>
-            <div class="date-strip" id="dateStrip"></div>
-            <div id="timeWrap"></div>
+            <div class="step-head">
+              <h3>¿Cuándo te esperamos?</h3>
+              <p>Solo mostramos los horarios realmente libres.</p>
+            </div>
+            <div class="picker">
+              <div class="date-strip" id="dateStrip"></div>
+              <div id="timeWrap"></div>
+            </div>
             <div class="step-actions">
-              <button class="btn btn-ghost" data-action="prev-step">
-                <i class="ph ph-arrow-left" aria-hidden="true"></i> Atras
+              <button class="btn btn-quiet" data-action="prev-step">
+                <i class="ph-light ph-arrow-left" aria-hidden="true"></i> Atrás
               </button>
             </div>
           </section>
 
           <section class="step" data-step="4">
-            <h3>Tus datos</h3>
-            <p>En producción este paso también puede pedir anticipo o pago completo.</p>
+            <div class="step-head">
+              <h3>Solo faltan tus datos</h3>
+              <p>Con esto confirmamos la cita y te la recordamos antes.</p>
+            </div>
             <form class="form" id="bookingForm" novalidate>
               <div class="field">
                 <label for="fName">Nombre completo</label>
@@ -247,41 +365,41 @@
                 <span class="field-error" data-error-for="phone"></span>
               </div>
               <div class="field">
-                <label for="fEmail">Correo, opcional</label>
+                <label for="fEmail">Correo <small>(opcional)</small></label>
                 <input id="fEmail" name="email" type="email" placeholder="correo@ejemplo.com" autocomplete="email">
                 <span class="field-error" data-error-for="email"></span>
               </div>
               <div class="field">
-                <label for="fNote">Nota, opcional</label>
-                <input id="fNote" name="note" placeholder="Alguna indicacion para tu cita">
+                <label for="fNote">Nota <small>(opcional)</small></label>
+                <input id="fNote" name="note" placeholder="Alguna indicación para tu cita">
               </div>
 
               <div class="pay-note">
                 <div>
-                  <strong>Pago en el local</strong>
+                  <strong>Pago en el estudio</strong>
                   <small>Configuración actual de esta demo</small>
                 </div>
                 <span>$0 ahora</span>
               </div>
 
               <div class="step-actions full">
-                <button type="button" class="btn btn-ghost" data-action="prev-step">
-                  <i class="ph ph-arrow-left" aria-hidden="true"></i> Atras
+                <button type="button" class="btn btn-quiet" data-action="prev-step">
+                  <i class="ph-light ph-arrow-left" aria-hidden="true"></i> Atrás
                 </button>
                 <button type="submit" class="btn btn-primary" id="submitBtn">
-                  Confirmar reserva <i class="ph ph-check" aria-hidden="true"></i>
+                  Confirmar cita <i class="ph-light ph-arrow-right" aria-hidden="true"></i>
                 </button>
               </div>
             </form>
           </section>
 
           <section class="success" id="success">
-            <div class="success-mark"><i class="ph ph-check" aria-hidden="true"></i></div>
-            <h3>Ya estás en agenda</h3>
+            <div class="success-mark"><i class="ph-light ph-check" aria-hidden="true"></i></div>
+            <h3>Tu cita está confirmada</h3>
             <p id="successText"></p>
-            <div class="summary" id="successSummary"></div>
+            <div class="success-card" id="successSummary"></div>
             <div class="success-actions">
-              <button class="btn btn-primary" data-action="close-booking">Volver al sitio</button>
+              <button class="btn btn-dark" data-action="close-booking">Volver al sitio</button>
             </div>
           </section>
         </div>

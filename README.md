@@ -51,14 +51,38 @@ Las secciones sin permiso siguen visibles en la barra lateral, con candado y des
 
 El acceso incluye validación por campo, contador de intentos restantes y bloqueo temporal de 20 segundos tras tres fallos. Es una simulación de frontend: en producción la autenticación vive en el backend con claves hasheadas y sesión firmada.
 
-## Sistema visual
+## Sistema de marca
 
-- Tema oscuro fijo, elegido porque la fotografía del local es oscura y cálida.
-- Un solo color de acento (`#EA580C`) en toda la interfaz.
-- Radio 0 en todos los elementos, sin gradientes ni sombras difusas.
-- Tipografía: Anton para display, Geist para interfaz, Geist Mono para datos y horarios.
-- Escala de espaciado fija de 4 a 128 px.
-- Contraste verificado: todo el texto cumple WCAG AA en las tres superficies.
+Aplica el Brand System aprobado de Noble Barber Studio: editorial masculino, sobrio y cálido.
+
+**Color.** Proporción aproximada 80% negro y carbón, 15% hueso y champagne, 5% oro. El dorado es acento y nunca ocupa bloques grandes.
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--noble-black` | `#090909` | Fondo principal |
+| `--noble-obsidian` | `#12110F` | Superficies y sidebar |
+| `--noble-charcoal` | `#211E1A` | Superficies elevadas |
+| `--noble-gold` | `#B49352` | Acento, botón primario |
+| `--noble-champagne` | `#D4C19A` | Texto de énfasis, filetes |
+| `--noble-bone` | `#EEE9DF` | Texto sobre oscuro, zona de reserva |
+| `--noble-gray` | `#989188` | Texto secundario |
+| `--noble-status` | `#728674` | Estado de disponibilidad |
+
+Sobre superficies claras el oro y el verde no alcanzan contraste como texto (2.9:1 y 3.9:1), así que existen `--gold-ink` (`#8A6E32`) y `--status-ink` (`#4F6352`) para ese caso.
+
+**Tipografía.** Cormorant Garamond para titulares y frases editoriales, Manrope para interfaz y formularios, Geist Mono solo para datos: horarios, precios, duraciones y métricas.
+
+**Radios.** Botones e inputs 8 px, cards de UI 10 px, fotografía 14 px, modal de reserva 18 px, pastillas de estado 999 px.
+
+**Superficies.** El sitio público es oscuro; la zona de interacción de la reserva y el panel del negocio son claros (`#EEE9DF` y `#F2EFE8`) con sidebar oscuro.
+
+**Marca.** El wordmark es tipográfico por ahora. El marcado del header, el pie, el login y el panel ya reserva el hueco para `assets/brand/noble-logo.svg` y `assets/brand/noble-mark.svg`.
+
+Contraste verificado: todo el texto cumple WCAG AA en el sitio, el modal de reserva, el login y el panel.
+
+## Secciones del sitio
+
+Hero, The Noble Experience, Servicios en filas, Equipo, The Noble Ritual y cierre fotográfico. The Noble Ritual es una sección de marca: el flujo real de reserva se explica dentro del modal.
 
 ## Detalles de comportamiento
 
@@ -67,7 +91,8 @@ El acceso incluye validación por campo, contador de intentos restantes y bloque
 - Si el turno se ocupa desde otra pestaña entre la selección y el envío, el formulario avisa y devuelve al paso de horarios.
 - La agenda de ejemplo se genera con un PRNG de semilla fija, así las métricas son realistas y no cambian en cada recarga.
 - Las visitas y el gasto de cada cliente se calculan desde las reservas, nunca se escriben a mano, para que la tabla no contradiga a la agenda.
-- Las animaciones usan GSAP con ScrollTrigger. Si el CDN falla o el sistema pide movimiento reducido, el contenido se muestra estático sin quedar invisible.
+- La agenda del panel tiene filas por hora y turnos de 30 minutos, así que cada celda muestra todas las citas de esa hora, no solo la primera.
+- Las animaciones usan GSAP con ScrollTrigger: entrada del hero de unos 1,3 s, parallax de la fotografía limitado al 3% y resaltado progresivo del ritual sin secuestrar el scroll. Si el CDN falla o el sistema pide movimiento reducido, el contenido se muestra estático sin quedar invisible.
 
 ## Stack
 

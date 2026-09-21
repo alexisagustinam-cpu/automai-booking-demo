@@ -1,16 +1,17 @@
 /* Modelo y persistencia compartidos entre el sitio público y el panel del negocio. */
 
+/* Los ids no cambian: la persistencia y las reservas guardadas dependen de ellos. */
 const SERVICES = [
-  { id: 'cut',     name: 'Corte clásico',    duration: 45, price: 8,  desc: 'Diagnóstico, corte, acabado y styling.' },
-  { id: 'beard',   name: 'Barba y perfilado', duration: 30, price: 6,  desc: 'Perfilado preciso, toalla caliente y acabado.' },
-  { id: 'combo',   name: 'Corte y barba',     duration: 60, price: 12, desc: 'Servicio completo para renovar tu imagen.' },
-  { id: 'premium', name: 'Ritual Noble',      duration: 75, price: 18, desc: 'Corte, barba, facial express y styling premium.' }
+  { id: 'cut',     name: 'Signature Cut', duration: 45, price: 8,  desc: 'Diagnóstico, corte y styling.' },
+  { id: 'beard',   name: 'Beard Ritual',  duration: 30, price: 6,  desc: 'Perfilado, toalla caliente y acabado.' },
+  { id: 'combo',   name: 'Cut + Beard',   duration: 60, price: 12, desc: 'El servicio completo, en una sola visita.' },
+  { id: 'premium', name: 'Noble Ritual',  duration: 75, price: 18, desc: 'Corte, barba, facial express y styling.' }
 ];
 
 const BARBERS = [
-  { id: 'mateo',     name: 'Mateo Rojas',     short: 'Mateo',     initials: 'MR', specialty: 'Fades y textura',      rating: '4.9' },
-  { id: 'daniel',    name: 'Daniel Guevara',  short: 'Daniel',    initials: 'DG', specialty: 'Clásico y barba',      rating: '4.9' },
-  { id: 'sebastian', name: 'Sebastián Cueva', short: 'Sebastián', initials: 'SC', specialty: 'Diseño y tendencias',  rating: '4.8' }
+  { id: 'mateo',     name: 'Mateo Rojas',     short: 'Mateo',     initials: 'MR', specialty: 'Fades · Texture',        rating: '4.9' },
+  { id: 'daniel',    name: 'Daniel Guevara',  short: 'Daniel',    initials: 'DG', specialty: 'Barba · Estilo clásico', rating: '4.9' },
+  { id: 'sebastian', name: 'Sebastián Cueva', short: 'Sebastián', initials: 'SC', specialty: 'Estilo moderno',         rating: '4.8' }
 ];
 
 const SLOTS = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30'];

@@ -7,6 +7,14 @@ const AGENDA_HOURS = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:
 const MAX_ATTEMPTS = 3;
 const LOCK_SECONDS = 20;
 
+const SECTION_SUBTITLES = {
+  resumen: 'Así va el estudio hoy.',
+  midia: 'Tu agenda y tus números.',
+  agenda: 'Reservas por hora y profesional.',
+  clientes: 'Historial y estado de cada cliente.',
+  servicios: 'Duración, precio y demanda.'
+};
+
 let session = null;
 let activeSection = null;
 let attempts = 0;
@@ -133,9 +141,9 @@ function renderNav() {
       <button data-section="${section.id}" class="${allowed ? '' : 'locked'}"
               ${allowed ? '' : 'aria-disabled="true"'}
               title="${allowed ? section.label : 'Solo administración'}">
-        <i class="ph ${section.icon}" aria-hidden="true"></i>
+        <i class="ph-light ${section.icon}" aria-hidden="true"></i>
         <span>${section.label}</span>
-        ${allowed ? '' : '<i class="ph ph-lock-simple lock" aria-hidden="true"></i>'}
+        ${allowed ? '' : '<i class="ph-light ph-lock-simple lock" aria-hidden="true"></i>'}
       </button>
     `;
   }).join('');
@@ -154,6 +162,7 @@ function openSection(id) {
   activeSection = id;
   $$('#sideNav button').forEach(b => b.classList.toggle('active', b.dataset.section === id));
   $('#sectionTitle').textContent = section.label;
+  $('#sectionSub').textContent = SECTION_SUBTITLES[id] || '';
 
   const renderers = {
     resumen: renderResumen,
@@ -167,12 +176,13 @@ function openSection(id) {
 
 function renderDenied(section) {
   $('#sectionTitle').textContent = section.label;
+  $('#sectionSub').textContent = 'Sección restringida.';
   $('#headActions').innerHTML = '';
   $('#panelBody').innerHTML = `
     <div class="state denied">
-      <i class="ph ph-lock-simple" aria-hidden="true"></i>
+      <i class="ph-light ph-lock-simple" aria-hidden="true"></i>
       <h3>Sin acceso</h3>
-      <p>Tu cuenta de barbero no tiene permiso sobre ${section.label.toLowerCase()}. Pide al administrador del local que la habilite.</p>
+      <p>Tu cuenta de barbero no tiene permiso sobre ${section.label.toLowerCase()}. Pide a la administración del estudio que la habilite.</p>
     </div>
   `;
 }
@@ -206,7 +216,7 @@ function appointmentRow(b) {
         <strong>${b.name}</strong>
         <small>${detail}</small>
       </div>
-      <span class="pill ${status}">${b.status}</span>
+      <span class="pill pill-${status}">${b.status}</span>
     </div>
   `;
 }
@@ -247,9 +257,17 @@ function renderResumen() {
   const refBookings = bookings.filter(b => b.date === refDate);
   const revenue = refBookings.reduce((sum, b) => sum + getService(b.service).price, 0);
 
+  /* Ocupación del día: turnos tomados sobre la capacidad real de ese día. */
+  const capacity = slotsForDate(refDate).length * BARBERS.length;
+  const dayLoad = {
+    taken: refBookings.length,
+    capacity,
+    percent: capacity ? Math.round((refBookings.length / capacity) * 100) : 0
+  };
+
   $('#headActions').innerHTML = `
     <button class="btn btn-primary btn-sm" id="newBooking">
-      <i class="ph ph-plus" aria-hidden="true"></i> Nueva reserva
+      <i class="ph-light ph-plus" aria-hidden="true"></i> Nueva reserva
     </button>
   `;
 
@@ -281,7 +299,7 @@ function renderResumen() {
       <article class="block">
         <div class="block-head">
           <h3>Próximas citas</h3>
-          <button class="btn btn-ghost btn-sm" data-section="agenda">Ver agenda</button>
+          <button class="btn btn-quiet btn-sm" data-section="agenda">Ver agenda</button>
         </div>
         <div class="block-body">
           <div class="appointments">
@@ -292,21 +310,19 @@ function renderResumen() {
 
       <article class="block">
         <div class="block-head">
-          <h3>Carga de la semana</h3>
-          <span class="tag">${bars.average}% ocupado</span>
+          <h3>Ocupación del día</h3>
+          <span class="tag">${closedToday ? niceDate(refDate) : 'Hoy'}</span>
         </div>
         <div class="block-body">
-          <div class="bars">
-            ${bars.days.map((d, i) => `
-              <div class="bar-col">
-                <i style="height:${Math.max(6, Math.round((bars.counts[i] / bars.peak) * 100))}%"></i>
-                <small>${d}</small>
-              </div>
-            `).join('')}
-          </div>
-          <div class="bars-foot">
-            <span>Citas por día</span>
-            <b>Pico ${bars.peak}</b>
+          <div class="gauge">
+            <div class="gauge-ring" style="--value:${dayLoad.percent}">
+              <b>${dayLoad.percent}%</b>
+            </div>
+            <div class="gauge-copy">
+              <strong>${dayLoad.taken} de ${dayLoad.capacity} turnos</strong>
+              <span>${dayLoad.capacity - dayLoad.taken} espacios libres</span>
+              <span>${BARBERS.length} profesionales en agenda</span>
+            </div>
           </div>
         </div>
       </article>
@@ -322,15 +338,15 @@ function renderResumen() {
           <div class="automations">
             <div class="automation">
               <div><strong>Confirmación inmediata</strong><small>WhatsApp al crear la reserva</small></div>
-              <span class="switch">Activa</span>
+              <span class="pill pill-ok">Activa</span>
             </div>
             <div class="automation">
               <div><strong>Recordatorio 24 horas antes</strong><small>Reduce ausencias sin llamar</small></div>
-              <span class="switch">Activa</span>
+              <span class="pill pill-ok">Activa</span>
             </div>
             <div class="automation">
               <div><strong>Recuperación a 30 días</strong><small>Reactiva clientes inactivos</small></div>
-              <span class="switch">Activa</span>
+              <span class="pill pill-ok">Activa</span>
             </div>
           </div>
         </div>
@@ -338,21 +354,21 @@ function renderResumen() {
 
       <article class="block">
         <div class="block-head">
-          <h3>Clientes recientes</h3>
-          <button class="btn btn-ghost btn-sm" data-section="clientes">Ver CRM</button>
+          <h3>Carga de la semana</h3>
+          <span class="tag">${bars.average}% ocupado</span>
         </div>
         <div class="block-body">
-          <div class="appointments">
-            ${clients.slice(-4).reverse().map(c => `
-              <div class="appointment">
-                <span class="avatar">${initialsOf(c.name)}</span>
-                <div class="appointment-who">
-                  <strong>${c.name}</strong>
-                  <small>${c.visits} visitas, ${money(c.spent)}</small>
-                </div>
-                <span class="pill">${c.last}</span>
+          <div class="bars">
+            ${bars.days.map((d, i) => `
+              <div class="bar-col ${bars.counts[i] === bars.peak ? 'peak' : ''}">
+                <i style="height:${Math.max(4, Math.round((bars.counts[i] / bars.peak) * 100))}%"></i>
+                <small>${d}</small>
               </div>
             `).join('')}
+          </div>
+          <div class="bars-foot">
+            <span>Citas por día</span>
+            <b>Pico ${bars.peak}</b>
           </div>
         </div>
       </article>
@@ -399,7 +415,7 @@ function renderMiDia() {
     <article class="block">
       <div class="block-head">
         <h3>Mi agenda de ${niceDate(refDate)}</h3>
-        <button class="btn btn-ghost btn-sm" data-section="agenda">Ver por hora</button>
+        <button class="btn btn-quiet btn-sm" data-section="agenda">Ver por hora</button>
       </div>
       <div class="block-body">
         <div class="appointments">
@@ -418,8 +434,8 @@ function renderAgenda() {
   const columns = `70px repeat(${scope.length}, minmax(0, 1fr))`;
 
   $('#headActions').innerHTML = `
-    <span class="mono" style="color:var(--bone-dim)">
-      ${niceDate(day)}, ${session.role === 'admin' ? 'todo el local' : 'solo tu columna'}
+    <span class="pill pill-plain">
+      ${niceDate(day)}, ${session.role === 'admin' ? 'todo el estudio' : 'solo tu columna'}
     </span>
   `;
 
@@ -427,15 +443,20 @@ function renderAgenda() {
     <div class="agenda-row" style="grid-template-columns:${columns}">
       <span class="agenda-hour">${hour}</span>
       ${scope.map(barber => {
-        const booking = all.find(b => b.date === day && b.barber === barber.id && b.time.startsWith(hour.slice(0, 2)));
+        /* Las filas son por hora y los turnos de 30 minutos: en una misma
+           celda pueden caer dos citas y las dos tienen que verse. */
+        const slotBookings = all
+          .filter(b => b.date === day && b.barber === barber.id && b.time.startsWith(hour.slice(0, 2)))
+          .sort((a, b) => a.time.localeCompare(b.time));
+
         return `
           <div class="agenda-cell">
-            ${booking ? `
+            ${slotBookings.map(booking => `
               <div class="agenda-block">
                 <strong>${booking.name}</strong>
                 <small>${booking.time} ${getService(booking.service).name}</small>
               </div>
-            ` : ''}
+            `).join('')}
           </div>
         `;
       }).join('')}
@@ -456,15 +477,15 @@ function renderAgenda() {
 function renderClientes() {
   const clients = clientsFrom(Store.bookings());
   $('#headActions').innerHTML = `
-    <button class="btn btn-outline btn-sm" id="exportBtn">
-      <i class="ph ph-download-simple" aria-hidden="true"></i> Exportar CSV
+    <button class="btn btn-secondary btn-sm" id="exportBtn">
+      <i class="ph-light ph-download-simple" aria-hidden="true"></i> Exportar CSV
     </button>
   `;
 
   $('#panelBody').innerHTML = `
     <div class="table-tools">
       <label class="search">
-        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+        <i class="ph-light ph-magnifying-glass" aria-hidden="true"></i>
         <input id="clientSearch" placeholder="Buscar por nombre, teléfono o correo" aria-label="Buscar cliente">
       </label>
     </div>
@@ -482,7 +503,7 @@ function drawClients(clients, query) {
   if (!rows.length) {
     $('#clientTableWrap').innerHTML = `
       <div class="state">
-        <i class="ph ph-user-circle-dashed" aria-hidden="true"></i>
+        <i class="ph-light ph-user-circle-dashed" aria-hidden="true"></i>
         <h3>Sin resultados</h3>
         <p>Ningún cliente coincide con "${query}". Prueba con otro nombre o número.</p>
       </div>
@@ -511,7 +532,7 @@ function drawClients(clients, query) {
             <td class="num">${c.last}</td>
             <td class="num">${c.visits}</td>
             <td class="num">${money(c.spent)}</td>
-            <td><span class="pill ${c.status === 'Reactivar' ? 'wait' : 'ok'}">${c.status}</span></td>
+            <td><span class="pill pill-${c.status === 'Reactivar' ? 'wait' : 'ok'}">${c.status}</span></td>
           </tr>
         `).join('')}
       </tbody>
@@ -523,7 +544,7 @@ function renderServicios() {
   const bookings = Store.bookings();
   $('#headActions').innerHTML = `
     <button class="btn btn-primary btn-sm" id="newService">
-      <i class="ph ph-plus" aria-hidden="true"></i> Nuevo servicio
+      <i class="ph-light ph-plus" aria-hidden="true"></i> Nuevo servicio
     </button>
   `;
 
@@ -539,7 +560,7 @@ function renderServicios() {
             </div>
             <span class="num">${s.duration} min</span>
             <span class="num">${money(s.price)}</span>
-            <span class="pill ok">${timesBooked} reservas</span>
+            <span class="pill pill-ok">${timesBooked} reservas</span>
           </div>
         `;
       }).join('')}
@@ -550,7 +571,7 @@ function renderServicios() {
 function emptyState(title, text) {
   return `
     <div class="state">
-      <i class="ph ph-calendar-blank" aria-hidden="true"></i>
+      <i class="ph-light ph-calendar-blank" aria-hidden="true"></i>
       <h3>${title}</h3>
       <p>${text}</p>
     </div>
@@ -562,7 +583,7 @@ function emptyState(title, text) {
 let toastTimer;
 function toast(message, icon = 'ph-check-circle') {
   const node = $('#toast');
-  node.innerHTML = `<i class="ph ${icon}" aria-hidden="true"></i> ${message}`;
+  node.innerHTML = `<i class="ph-light ${icon}" aria-hidden="true"></i> ${message}`;
   node.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => node.classList.remove('show'), 3200);

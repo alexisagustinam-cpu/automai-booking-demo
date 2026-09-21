@@ -1,4 +1,5 @@
-/* Sitio público y flujo de reserva. */
+/* Sitio público y flujo de reserva. La lógica de disponibilidad no cambia:
+   solo la presentación y el movimiento. */
 
 const $ = sel => document.querySelector(sel);
 const $$ = sel => [...document.querySelectorAll(sel)];
@@ -21,15 +22,15 @@ function isTaken(date, time, barberId) {
   return BARBERS.every(b => hasBooking(date, time, b.id));
 }
 
+function freeSlotsFor(date, barberId) {
+  return slotsForDate(date).filter(t => !isTaken(date, t, barberId));
+}
+
 function freeBarberAt(date, time) {
   return BARBERS
     .filter(b => !hasBooking(date, time, b.id))
     .map(b => ({ id: b.id, load: bookings.filter(x => x.date === date && x.barber === b.id).length }))
     .sort((a, b) => a.load - b.load)[0]?.id || null;
-}
-
-function freeSlotsFor(date, barberId) {
-  return slotsForDate(date).filter(t => !isTaken(date, t, barberId));
 }
 
 function nextFreeSlot() {
@@ -43,7 +44,7 @@ function nextFreeSlot() {
     });
     if (free.length) {
       const label = offset === 0 ? 'Hoy' : offset === 1 ? 'Mañana' : niceDate(date);
-      return { date, time: free[0], label: `${label} ${free[0]}` };
+      return { date, time: free[0], label: `${label} · ${free[0]}` };
     }
   }
   return null;
@@ -55,53 +56,59 @@ function leastBusyBarber(date) {
     .sort((a, b) => a.load - b.load)[0].id;
 }
 
+/* Estado de agenda de cada profesional, calculado con datos reales. */
+function availabilityFor(barberId) {
+  const today = dateISO(0);
+  const day = isClosed(today) ? nextOpenDate(0) : today;
+  const free = freeSlotsFor(day, barberId).length;
+
+  if (!free) return { label: 'Agenda completa', cls: 'pill-busy' };
+  if (day === today) return { label: 'Disponible hoy', cls: 'pill-free' };
+  if (day === dateISO(1)) return { label: 'Disponible mañana', cls: 'pill-soon' };
+  return { label: `Disponible ${niceDate(day)}`, cls: 'pill-soon' };
+}
+
 /* ---------- Render del sitio público ---------- */
 
 function renderServices() {
-  $('#serviceList').innerHTML = SERVICES.map(s => `
+  $('#serviceList').innerHTML = SERVICES.map((s, i) => `
     <button class="service-row reveal" data-book-service="${s.id}">
+      <span class="service-num">${String(i + 1).padStart(2, '0')}</span>
       <span class="service-name">${s.name}</span>
       <span class="service-desc">${s.desc}</span>
       <span class="service-time">${s.duration} min</span>
       <span class="service-price">${money(s.price)}</span>
-      <span class="service-go" aria-hidden="true"><i class="ph ph-arrow-up-right"></i></span>
+      <span class="service-go" aria-hidden="true"><i class="ph-light ph-arrow-up-right"></i></span>
     </button>
   `).join('');
 }
 
 function renderTeam() {
-  $('#teamGrid').innerHTML = BARBERS.map(b => `
-    <button class="team-card reveal" data-book-barber="${b.id}" aria-label="Reservar con ${b.name}">
-      <span class="team-photo">
-        <img src="assets/img/${b.id}-1000.webp"
-             srcset="assets/img/${b.id}-420.webp 420w, assets/img/${b.id}-640.webp 640w, assets/img/${b.id}-1000.webp 1000w"
-             sizes="(max-width: 760px) 100vw, 33vw"
-             width="1122" height="1402" loading="lazy" decoding="async"
-             alt="${b.name}, barbero de Noble Barber Studio">
-      </span>
-      <span class="team-info">
-        <span>
-          <span class="team-name">${b.short}</span>
-          <span class="mono">${b.specialty}</span>
+  $('#teamGrid').innerHTML = BARBERS.map(b => {
+    const state = availabilityFor(b.id);
+    return `
+      <button class="team-card reveal" data-book-barber="${b.id}" aria-label="Ver disponibilidad de ${b.name}">
+        <span class="team-photo">
+          <img src="assets/img/${b.id}-1000.webp"
+               srcset="assets/img/${b.id}-420.webp 420w, assets/img/${b.id}-640.webp 640w, assets/img/${b.id}-1000.webp 1000w"
+               sizes="(max-width: 768px) 100vw, 33vw"
+               width="1122" height="1402" loading="lazy" decoding="async"
+               alt="${b.name}, barbero de Noble Barber Studio">
         </span>
-        <span class="team-rating">${b.rating}</span>
-      </span>
-    </button>
-  `).join('');
-}
-
-function renderMarquee() {
-  const items = [
-    { icon: 'ph-star', value: '4.8', label: 'en Google' },
-    { icon: 'ph-scissors', value: '1.247', label: 'citas atendidas' },
-    { icon: 'ph-users-three', value: '3', label: 'barberos en agenda' },
-    { icon: 'ph-lightning', value: '40s', label: 'para reservar' },
-    { icon: 'ph-phone-slash', value: 'Cero', label: 'llamadas' }
-  ];
-  const html = items.map(i => `
-    <span class="marquee-item"><i class="ph ${i.icon}"></i><b>${i.value}</b> ${i.label}</span>
-  `).join('');
-  $('#marqueeTrack').innerHTML = html + html;
+        <span class="team-body">
+          <span class="team-name">${b.name}</span>
+          <span class="team-meta">
+            ${b.specialty}
+            <span class="team-rating">${b.rating} ★</span>
+          </span>
+          <span class="team-foot">
+            <span class="pill ${state.cls}"><i class="dot" aria-hidden="true"></i> ${state.label}</span>
+            <span class="link-gold">Ver disponibilidad <i class="ph-light ph-arrow-right" aria-hidden="true"></i></span>
+          </span>
+        </span>
+      </button>
+    `;
+  }).join('');
 }
 
 function renderNextSlot() {
@@ -114,40 +121,44 @@ function renderNextSlot() {
 function renderStepServices() {
   $('#stepServices').innerHTML = SERVICES.map(s => `
     <button class="option ${flow.service === s.id ? 'selected' : ''}" data-pick-service="${s.id}">
-      <span class="option-mark">${s.duration}m</span>
       <span class="option-main">
         <strong>${s.name}</strong>
         <small>${s.desc}</small>
       </span>
-      <span class="option-value">${money(s.price)}</span>
+      <span class="option-side">
+        <span class="option-time">${s.duration} min</span>
+        <span class="option-price">${money(s.price)}</span>
+      </span>
     </button>
   `).join('');
 }
 
 function renderStepBarbers() {
-  const date = flow.date || dateISO(0);
+  const date = flow.date || (isClosed(dateISO(0)) ? nextOpenDate(0) : dateISO(0));
   const fastest = leastBusyBarber(date);
-  const fastestName = getBarber(fastest).short;
 
   $('#stepBarbers').innerHTML = `
     <button class="option ${flow.barber === 'any' ? 'selected' : ''}" data-pick-barber="any">
-      <span class="option-mark"><i class="ph ph-lightning" aria-hidden="true"></i></span>
       <span class="option-main">
-        <strong>Primero disponible</strong>
-        <small>Ahora mismo sería ${fastestName}</small>
+        <strong>El primero disponible</strong>
+        <small>Ahora mismo sería ${getBarber(fastest).short}</small>
       </span>
-      <span class="option-value">Recomendado</span>
+      <span class="option-side">
+        <span class="option-tag">Recomendado</span>
+      </span>
     </button>
   ` + BARBERS.map(b => {
     const free = freeSlotsFor(date, b.id).length;
     return `
       <button class="option ${flow.barber === b.id ? 'selected' : ''}" data-pick-barber="${b.id}">
-        <span class="option-mark">${b.initials}</span>
         <span class="option-main">
           <strong>${b.name}</strong>
           <small>${b.specialty}</small>
         </span>
-        <span class="option-value">${free} libres</span>
+        <span class="option-side">
+          <span class="option-time">${free} libres</span>
+          <span class="option-price">${b.rating} ★</span>
+        </span>
       </button>
     `;
   }).join('');
@@ -168,7 +179,7 @@ function renderDates() {
     const closed = isClosed(d.iso);
     return `
       <button class="date-btn ${flow.date === d.iso ? 'selected' : ''}" data-pick-date="${d.iso}"
-              ${closed ? 'disabled aria-disabled="true" title="El local cierra este dia"' : ''}>
+              ${closed ? 'disabled aria-disabled="true" title="El estudio cierra este día"' : ''}>
         <small>${d.day}</small>
         <strong>${d.num}</strong>
       </button>
@@ -180,13 +191,14 @@ function renderDates() {
 
 function renderTimes() {
   const wrap = $('#timeWrap');
+
   if (!flow.date) {
-    wrap.innerHTML = '<p class="empty-hint">Selecciona una fecha para ver los horarios</p>';
+    wrap.innerHTML = '<p class="empty-hint">Selecciona una fecha para ver los horarios disponibles.</p>';
     return;
   }
 
   if (isClosed(flow.date)) {
-    wrap.innerHTML = '<p class="empty-hint">El local cierra este día. Elige otra fecha.</p>';
+    wrap.innerHTML = '<p class="empty-hint">El estudio cierra este día. Elige otra fecha.</p>';
     return;
   }
 
@@ -198,28 +210,48 @@ function renderTimes() {
     return;
   }
 
-  wrap.innerHTML = `<div class="time-grid">${slotsForDate(flow.date).map(t => {
-    const taken = isTaken(flow.date, t, barberId);
-    return `
-      <button class="time-btn ${flow.time === t ? 'selected' : ''}" data-pick-time="${t}"
-              ${taken ? 'disabled aria-disabled="true"' : ''}>${t}</button>
-    `;
-  }).join('')}</div>`;
+  const who = flow.barber === 'any' ? 'el equipo' : getBarber(flow.barber).short;
+
+  wrap.innerHTML = `
+    <div class="time-label">
+      <span>${niceDate(flow.date)}, con ${who}</span>
+      <span>${free.length} horarios libres</span>
+    </div>
+    <div class="time-grid">
+      ${slotsForDate(flow.date).map(t => {
+        const taken = isTaken(flow.date, t, barberId);
+        return `
+          <button class="time-btn ${flow.time === t ? 'selected' : ''}" data-pick-time="${t}"
+                  ${taken ? 'disabled aria-disabled="true"' : ''}>${t}</button>
+        `;
+      }).join('')}
+    </div>
+  `;
 }
 
-function renderSummary(target = '#summary') {
+function renderSummary() {
   const service = getService(flow.service);
-  const barber = flow.barber === 'any' ? { name: 'Primero disponible' } : getBarber(flow.barber);
-  const node = $(target);
-  if (!node) return;
+  const barber = flow.barber === 'any' ? { name: 'El primero disponible' } : getBarber(flow.barber);
 
-  node.innerHTML = `
-    <div class="summary-row"><span>Servicio</span><strong>${service ? service.name : 'Por elegir'}</strong></div>
-    <div class="summary-row"><span>Barbero</span><strong>${barber ? barber.name : 'Por elegir'}</strong></div>
-    <div class="summary-row"><span>Fecha</span><strong>${flow.date ? niceDate(flow.date) : 'Por elegir'}</strong></div>
-    <div class="summary-row"><span>Hora</span><strong>${flow.time || 'Por elegir'}</strong></div>
-    ${service ? `<div class="summary-row total"><span>Total</span><strong>${money(service.price)}</strong></div>` : ''}
-  `;
+  const rows = [
+    ['Servicio', service ? service.name : null],
+    ['Duración', service ? `${service.duration} min` : null],
+    ['Profesional', barber ? barber.name : null],
+    ['Fecha', flow.date ? niceDate(flow.date) : null],
+    ['Hora', flow.time || null]
+  ];
+
+  $('#summary').innerHTML = rows.map(([label, value]) => `
+    <div class="summary-row ${value ? '' : 'is-empty'}">
+      <span>${label}</span>
+      <strong>${value || 'Por elegir'}</strong>
+    </div>
+  `).join('') + (service ? `
+    <div class="summary-row total">
+      <span>Total</span>
+      <strong>${money(service.price)}</strong>
+    </div>
+  ` : '');
 }
 
 /* ---------- Navegación entre pasos ---------- */
@@ -228,17 +260,21 @@ function goToStep(step) {
   flow.step = step;
   $$('.step').forEach(el => el.classList.toggle('active', Number(el.dataset.step) === step));
   $('#success').classList.remove('show');
-  $('#stepCount').textContent = `Paso ${step} de 4`;
 
   const progress = $('#progress');
   progress.setAttribute('aria-valuenow', String(step));
-  $$('#progress span').forEach((bar, i) => bar.classList.toggle('done', i < step));
+  $$('.progress-step').forEach(el => {
+    const index = Number(el.dataset.progress);
+    el.classList.toggle('done', index < step);
+    el.classList.toggle('active', index === step);
+  });
+  $$('.progress-line').forEach((line, i) => line.classList.toggle('done', i < step - 1));
 
   renderSummary();
 
   const active = $(`.step[data-step="${step}"]`);
   if (active && hasGsap && !reduceMotion) {
-    gsap.fromTo(active, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out' });
+    gsap.fromTo(active, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
   }
   $('.booking-body').scrollTop = 0;
 }
@@ -261,14 +297,15 @@ function openBooking(prefill = {}) {
   overlay.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 
-  /* Si llega con servicio elegido pasa a escoger barbero.
-     Si llega desde una tarjeta del equipo el barbero ya esta puesto,
-     pero todavia falta el servicio, asi que empieza en el paso 1. */
+  /* Si llega con servicio elegido pasa a escoger profesional.
+     Desde una tarjeta del equipo el profesional ya está puesto,
+     pero todavía falta el servicio, así que empieza en el paso 1. */
   goToStep(prefill.service ? 2 : 1);
   closeMenu();
 
-  const firstOption = $('.step.active .option, .step.active input');
-  if (firstOption) firstOption.focus({ preventScroll: true });
+  /* El foco va al contenedor: si cayera en la primera opción, su anillo
+     de foco se confundiría con una selección ya hecha. */
+  $('#bookingBody').focus({ preventScroll: true });
 }
 
 function closeBooking() {
@@ -279,7 +316,7 @@ function closeBooking() {
   if (lastFocused) lastFocused.focus({ preventScroll: true });
 }
 
-/* ---------- Validacion del formulario ---------- */
+/* ---------- Validación ---------- */
 
 function setError(field, message) {
   const node = $(`[data-error-for="${field}"]`);
@@ -324,14 +361,14 @@ function validate(data) {
 function submitBooking(event) {
   event.preventDefault();
 
-  /* Devuelve al paso que falta en vez de dar un aviso generico. */
+  /* Devuelve al paso que falta en vez de dar un aviso genérico. */
   const missing = !flow.service ? { step: 1, message: 'Elige primero un servicio' }
-    : !flow.barber ? { step: 2, message: 'Elige con quien te atiendes' }
+    : !flow.barber ? { step: 2, message: 'Elige con quién te atiendes' }
     : !flow.date || !flow.time ? { step: 3, message: 'Elige fecha y hora' }
     : null;
 
   if (missing) {
-    toast(missing.message, 'ph-warning');
+    toast(missing.message, 'ph-warning-circle');
     goToStep(missing.step);
     return;
   }
@@ -350,7 +387,7 @@ function submitBooking(event) {
   const barber = flow.barber === 'any' ? freeBarberAt(flow.date, flow.time) : flow.barber;
 
   if (!barber || isTaken(flow.date, flow.time, barber)) {
-    toast('Ese turno se acaba de ocupar, elige otro', 'ph-warning');
+    toast('Ese turno se acaba de ocupar, elige otro', 'ph-warning-circle');
     flow.time = null;
     goToStep(3);
     renderTimes();
@@ -376,27 +413,28 @@ function submitBooking(event) {
 
   const service = getService(booking.service);
   $$('.step').forEach(el => el.classList.remove('active'));
-  $('#stepCount').textContent = 'Reserva confirmada';
-  $$('#progress span').forEach(bar => bar.classList.add('done'));
+  $$('.progress-step').forEach(el => { el.classList.add('done'); el.classList.remove('active'); });
+  $$('.progress-line').forEach(line => line.classList.add('done'));
   $('#success').classList.add('show');
   $('#successText').textContent = `${booking.name.split(' ')[0]}, te esperamos el ${niceDate(booking.date)} a las ${booking.time}.`;
 
   $('#successSummary').innerHTML = `
     <div class="summary-row"><span>Servicio</span><strong>${service.name}</strong></div>
-    <div class="summary-row"><span>Barbero</span><strong>${getBarber(booking.barber).name}</strong></div>
-    <div class="summary-row"><span>Cuándo</span><strong>${niceDate(booking.date)} ${booking.time}</strong></div>
+    <div class="summary-row"><span>Profesional</span><strong>${getBarber(booking.barber).name}</strong></div>
+    <div class="summary-row"><span>Cuándo</span><strong>${niceDate(booking.date)} · ${booking.time}</strong></div>
     <div class="summary-row total"><span>Total</span><strong>${money(service.price)}</strong></div>
   `;
 
   if (hasGsap && !reduceMotion) {
-    gsap.fromTo('#success', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
+    gsap.fromTo('#success', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' });
   }
 
   renderNextSlot();
-  toast('Reserva registrada en la agenda del local', 'ph-check-circle');
+  renderTeam();
+  toast('Cita confirmada y enviada a la agenda del estudio', 'ph-check-circle');
 }
 
-/* ---------- Menu movil ---------- */
+/* ---------- Menú móvil ---------- */
 
 function openMenu() {
   $('#mobileMenu').classList.add('open');
@@ -415,10 +453,10 @@ function closeMenu() {
 let toastTimer;
 function toast(message, icon = 'ph-check-circle') {
   const node = $('#toast');
-  node.innerHTML = `<i class="ph ${icon}" aria-hidden="true"></i> ${message}`;
+  node.innerHTML = `<i class="ph-light ${icon}" aria-hidden="true"></i> ${message}`;
   node.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => node.classList.remove('show'), 3200);
+  toastTimer = setTimeout(() => node.classList.remove('show'), 3400);
 }
 
 /* ---------- Movimiento ---------- */
@@ -426,32 +464,66 @@ function toast(message, icon = 'ph-check-circle') {
 function initMotion() {
   if (!hasGsap || reduceMotion) {
     document.body.classList.add('no-motion');
+    $('#stickyCta').classList.add('show');
     return;
   }
 
   gsap.registerPlugin(ScrollTrigger);
 
-  /* Estado del nav sin escuchar scroll a mano. */
+  /* Entrada del hero, aproximadamente 1.35s en total. */
+  const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  intro
+    .from('#nav', { opacity: 0, duration: 0.5 }, 0)
+    .from('#heroEyebrow', { opacity: 0, y: 8, duration: 0.5 }, 0.1)
+    .from('.hero-title .line > span', { yPercent: 108, duration: 0.8, stagger: 0.08 }, 0.15)
+    .fromTo('#heroPhoto',
+      { clipPath: 'inset(0% 0% 100% 0%)' },
+      { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9 }, 0.22)
+    .from('#heroLead', { opacity: 0, y: 10, duration: 0.5 }, 0.62)
+    .from('#heroActions', { opacity: 0, y: 10, duration: 0.5 }, 0.72)
+    .from('#heroStats', { opacity: 0, y: 10, duration: 0.5 }, 0.8)
+    .from('#slotCard', { opacity: 0, y: 12, duration: 0.5 }, 0.86);
+
+  /* Estado del header sin escuchar scroll a mano. */
   ScrollTrigger.create({
     start: 'top -40',
     end: 99999,
     onToggle: self => $('#nav').classList.toggle('is-stuck', self.isActive)
   });
 
-  /* Entrada del hero: establece jerarquia de lectura. */
-  gsap.from('.hero-copy h1', { opacity: 0, y: 26, duration: 0.7, ease: 'power3.out' });
-  gsap.from('.hero-copy .lead', { opacity: 0, y: 18, duration: 0.6, delay: 0.12, ease: 'power3.out' });
-  gsap.from('.hero-actions', { opacity: 0, y: 18, duration: 0.6, delay: 0.2, ease: 'power3.out' });
-  gsap.from('.slot-card', { opacity: 0, x: -20, duration: 0.6, delay: 0.42, ease: 'power3.out' });
+  /* Parallax contenido: 3% como máximo. */
+  gsap.to('#heroPhoto img', {
+    yPercent: 3,
+    ease: 'none',
+    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+  });
 
-  /* Reveals por sección: revelan el contenido en el orden en que se lee. */
+  /* Reservar cita fijo en móvil, una vez pasado el hero. */
+  ScrollTrigger.create({
+    trigger: '.hero',
+    start: 'bottom 70%',
+    end: 'max',
+    toggleClass: { targets: '#stickyCta', className: 'show' }
+  });
+
+  /* El ritual resalta el momento que estás leyendo, sin secuestrar el scroll. */
+  $$('.ritual-step').forEach(step => {
+    ScrollTrigger.create({
+      trigger: step,
+      start: 'top 72%',
+      end: 'bottom 45%',
+      toggleClass: { targets: step, className: 'is-active' }
+    });
+  });
+
+  /* Reveals por sección, en el orden en que se lee. */
   $$('.reveal').forEach(el => {
     gsap.fromTo(el,
-      { opacity: 0, y: 22 },
+      { opacity: 0, y: 18 },
       {
         opacity: 1,
         y: 0,
-        duration: 0.55,
+        duration: 0.7,
         ease: 'power2.out',
         scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
         onComplete: () => el.classList.add('is-revealed')
@@ -479,7 +551,7 @@ function handleClick(event) {
     flow.service = el.dataset.pickService;
     renderStepServices();
     renderStepBarbers();
-    /* El barbero puede venir ya elegido desde la seccion de equipo. */
+    /* El profesional puede venir ya elegido desde la sección de equipo. */
     if (flow.barber) {
       renderDates();
       goToStep(3);
@@ -515,7 +587,6 @@ function handleClick(event) {
 function init() {
   renderServices();
   renderTeam();
-  renderMarquee();
   renderNextSlot();
   renderStepServices();
   renderStepBarbers();
