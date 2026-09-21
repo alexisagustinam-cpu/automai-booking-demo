@@ -273,40 +273,61 @@ h1, h2, h3, p { margin: 0; }
 .mobile-menu nav a { display: block; font-family: var(--display); font-weight: 800; text-transform: uppercase; font-size: 30px; min-height: 44px; padding: 16px 0; border-bottom: 1px solid var(--line); }
 
 /* ---------- Hero ---------- */
-/* Panel de texto sobre papel + foto completa al lado (no texto flotando
-   sobre foto oscurecida): así lo pide el mockup aprobado. */
+/* Foto a pantalla completa, de lateral a lateral, con todo el contenido
+   superpuesto directamente sobre ella: así lo pide el mockup aprobado.
+   Nada de panel de papel ni de velo blanco sobre la foto — solo un
+   degradado oscuro para que el texto sea legible sobre la atmósfera
+   natural de la propia fotografía. */
 
-.hero { position: relative; background: var(--paper); margin-top: var(--nav-h); }
-
-.hero-inner {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: minmax(300px, 38%) 1fr;
-  min-height: clamp(480px, 54vw, 620px);
+.hero {
+  position: relative;
+  margin-top: var(--nav-h);
+  min-height: clamp(560px, 78vh, 860px);
+  overflow: hidden;
+  background: var(--ink);
 }
 
-.hero-copy {
+.hero-plate { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--ink); }
+.hero-plate img { width: 100%; height: 100%; object-fit: cover; object-position: 58% 38%; will-change: transform; }
+
+/* Velo oscuro (no blanco/papel) para legibilidad del texto, más fuerte
+   donde va la copy y abajo donde va la etiqueta lateral. */
+.hero-plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(100deg, rgba(10,8,6,0.6) 0%, rgba(10,8,6,0.32) 30%, rgba(10,8,6,0) 56%),
+    linear-gradient(0deg, rgba(10,8,6,0.5) 0%, rgba(10,8,6,0) 30%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  min-height: clamp(560px, 78vh, 860px);
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: clamp(32px, 4.4vw, 52px) clamp(24px, 3vw, 44px) clamp(32px, 4.4vw, 52px) var(--gutter);
+  align-items: center;
+  padding: clamp(90px, 12vw, 130px) var(--gutter) clamp(32px, 4.4vw, 56px);
 }
 
-.hero-copy .eyebrow { margin-bottom: 18px; }
+.hero-copy { max-width: 40ch; color: #fff; }
+.hero-copy .eyebrow { margin-bottom: 18px; color: rgba(255,255,255,0.78); }
+.hero-copy .eyebrow-rule { background: rgba(255,255,255,0.3); }
 
-.hero-title { font-size: clamp(34px, 4.6vw, 60px); color: var(--ink); }
-.hero-title .line-b { color: var(--wine); }
+.hero-title { font-size: clamp(36px, 5vw, 64px); color: #fff; }
+.hero-title .line-b { color: var(--wine-glow); }
 
 .hero-lead {
   margin-top: 18px;
   max-width: 34ch;
   font-size: 15px;
   line-height: 1.6;
-  color: var(--ink-soft);
+  color: rgba(255,255,255,0.82);
 }
 
 .hero-actions { display: flex; align-items: center; gap: 18px; margin-top: 28px; }
+.hero-actions .btn-ghost { color: #fff; }
+.hero-actions .btn-ghost::after { background: #fff; }
 
 .hero-tagline {
   margin-top: 44px;
@@ -317,32 +338,9 @@ h1, h2, h3, p { margin: 0; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 1.6;
-  color: var(--ink-soft);
+  color: rgba(255,255,255,0.75);
 }
-.hero-tagline-rule { display: block; width: 34px; height: 1px; margin-bottom: 12px; background: var(--line); }
-
-/* Foto */
-.hero-plate { position: relative; overflow: hidden; background: var(--ink); }
-.hero-plate img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 38%; will-change: transform; }
-
-/* Fundido blanco donde la foto se une al panel de texto: sin esto el
-   corte entre papel y foto se ve como un borde duro. */
-.hero-plate::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(90deg, var(--paper) 0%, rgba(242, 237, 229, 0) 7%);
-  pointer-events: none;
-}
-
-/* Velo oscuro solo abajo, para que la etiqueta lateral no pierda contraste. */
-.hero-plate::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(20,16,12,0.58) 0%, rgba(20,16,12,0) 30%);
-}
+.hero-tagline-rule { display: block; width: 34px; height: 1px; margin-bottom: 12px; background: rgba(255,255,255,0.3); }
 
 .hero-brandmark {
   position: absolute;
@@ -404,11 +402,6 @@ h1, h2, h3, p { margin: 0; }
 .section-top h2 { font-size: clamp(24px, 2vw, 30px); }
 .section-top .eyebrow-tail { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); text-align: right; }
 
-/* ---------- Servicios + Equipo, lado a lado ---------- */
-
-.svc-team-section { padding-top: clamp(48px, 6vw, 76px); }
-.svc-team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 5vw, 80px); align-items: start; }
-
 /* ---------- Servicios ---------- */
 
 .service-list { border-top: 1px solid var(--line); }
@@ -459,8 +452,6 @@ h1, h2, h3, p { margin: 0; }
 /* ---------- Cómo funciona ---------- */
 
 .how-panel {
-  max-width: var(--maxw);
-  margin: 0 var(--gutter);
   padding: clamp(34px, 5vw, 56px);
   border-radius: var(--r-panel);
   background: var(--paper-raised);
@@ -487,14 +478,21 @@ h1, h2, h3, p { margin: 0; }
 
 /* ---------- Estudio ---------- */
 
+/* La foto sangra hasta el borde izquierdo de la pantalla (como en el
+   mockup); la copy y las fotos laterales quedan alineadas al mismo
+   margen derecho que el resto de las secciones. */
 .studio { background: var(--paper); }
 .studio-inner {
-  max-width: var(--maxw); margin: 0 auto; padding: clamp(60px, 8vw, 100px) var(--gutter);
+  padding: clamp(60px, 8vw, 100px) 0 clamp(60px, 8vw, 100px) 0;
+  padding-right: max(var(--gutter), calc((100vw - var(--maxw)) / 2));
   display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.85fr) minmax(0, 0.6fr);
   gap: clamp(28px, 3.4vw, 48px); align-items: center;
 }
 
-.studio-photo { border-radius: var(--r-photo); overflow: hidden; aspect-ratio: 4 / 3; background: var(--ink); }
+.studio-photo {
+  border-radius: 0 var(--r-photo) var(--r-photo) 0;
+  overflow: hidden; aspect-ratio: 4 / 3; background: var(--ink);
+}
 .studio-photo img { width: 100%; height: 100%; object-fit: cover; }
 
 .studio-copy h2 { font-size: clamp(30px, 3.4vw, 48px); max-width: 13ch; margin: 16px 0 20px; }
@@ -515,17 +513,20 @@ h1, h2, h3, p { margin: 0; }
 
 .closing { position: relative; overflow: hidden; background: var(--wine); color: #fff; }
 
-.closing-inner { max-width: var(--maxw); margin: 0 auto; display: grid; grid-template-columns: minmax(180px, 0.38fr) minmax(0, 1fr) auto; align-items: stretch; min-height: clamp(280px, 34vw, 380px); }
+/* Sin max-width: la franja completa (foto + burdeos) sangra de lateral
+   a lateral, como en el mockup. */
+.closing-inner { display: grid; grid-template-columns: minmax(180px, 0.38fr) minmax(0, 1fr) auto; align-items: stretch; min-height: clamp(280px, 34vw, 380px); }
 
 .closing-photo { position: relative; overflow: hidden; }
 .closing-photo img { width: 100%; height: 100%; object-fit: cover; }
 .closing-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(78,18,22,0) 55%, var(--wine) 100%); }
 
-.closing-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(28px, 4vw, 40px) clamp(24px, 3vw, 40px); }
+.closing-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(28px, 4vw, 40px) clamp(24px, 3vw, 40px); }
 .closing-copy .eyebrow { color: rgba(255,255,255,0.6); margin-bottom: 14px; }
 .closing-copy .eyebrow-rule { background: rgba(255,255,255,0.25); }
 .closing-copy h2 { font-size: clamp(28px, 3.6vw, 52px); color: #fff; }
 .closing-copy p { margin: 14px 0 24px; font-size: 15px; color: rgba(255,255,255,0.78); }
+.closing-copy .btn { align-self: flex-start; }
 
 .closing-side {
   display: flex;
@@ -771,10 +772,9 @@ h1, h2, h3, p { margin: 0; }
 
 @media (max-width: 1100px) {
   .team-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .svc-team-grid { grid-template-columns: 1fr; gap: 56px; }
-  .studio-inner { grid-template-columns: 1fr; }
+  .studio-inner { grid-template-columns: 1fr; padding: clamp(60px, 8vw, 100px) var(--gutter); }
+  .studio-photo { border-radius: var(--r-photo); aspect-ratio: 16/9; }
   .testimonials-inner { grid-template-columns: 1fr; }
-  .studio-photo { aspect-ratio: 16/9; }
   .studio-side-photos { grid-template-columns: 1fr 1fr; }
   .how-grid { grid-template-columns: 1fr 1fr; }
   .closing-inner { grid-template-columns: 0.4fr 1fr; }
@@ -787,12 +787,19 @@ h1, h2, h3, p { margin: 0; }
   .nav .btn-primary { display: none; }
   .nav { gap: 14px; }
 
-  .hero-inner { grid-template-columns: 1fr; min-height: 0; }
-  .hero-plate { order: -1; aspect-ratio: 4/5; }
-  .hero-plate::before { display: none; }
-  .hero-copy { padding: 28px var(--gutter) 40px; }
-  .hero-title { font-size: clamp(30px, 9vw, 46px); }
-  .hero-tagline { margin-top: 32px; }
+  .hero { min-height: 0; }
+  .hero-plate { position: relative; inset: auto; min-height: 0; aspect-ratio: 4/5; }
+  .hero-content { position: relative; z-index: auto; min-height: 0; background: var(--paper); padding: 28px var(--gutter) 40px; }
+  .hero-copy { max-width: none; color: var(--ink); }
+  .hero-copy .eyebrow { color: var(--ink-soft); }
+  .hero-copy .eyebrow-rule { background: var(--line); }
+  .hero-title { font-size: clamp(30px, 9vw, 46px); color: var(--ink); }
+  .hero-title .line-b { color: var(--wine); }
+  .hero-lead { color: var(--ink-soft); }
+  .hero-actions .btn-ghost { color: var(--ink); }
+  .hero-actions .btn-ghost::after { background: var(--ink); }
+  .hero-tagline { margin-top: 32px; color: var(--ink-soft); }
+  .hero-tagline-rule { background: var(--line); }
   .hero-brandmark { display: none; }
   .hero-side-tag { display: none; }
   .slot-card { left: var(--gutter); right: var(--gutter); width: auto; top: auto; bottom: 20px; }
@@ -809,7 +816,7 @@ h1, h2, h3, p { margin: 0; }
 
   .team-grid { grid-template-columns: 1fr 1fr; }
 
-  .how-panel { margin: 0 var(--gutter); padding: 24px; }
+  .how-panel { padding: 24px; }
   .how-grid { grid-template-columns: 1fr; gap: 24px; }
 
   .closing-inner { grid-template-columns: 1fr; min-height: 0; }
