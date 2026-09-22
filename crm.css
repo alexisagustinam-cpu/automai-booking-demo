@@ -640,4 +640,42 @@ table.clients .num { font-family: var(--mono); font-variant-numeric: tabular-num
   .metrics { grid-template-columns: 1fr; gap: var(--s3); }
   .gauge { flex-direction: column; align-items: flex-start; }
   .service-admin-row { grid-template-columns: 1fr auto; gap: var(--s3); }
+  .crm-modal .form { grid-template-columns: 1fr; }
 }
+
+/* ---------- Modal del panel (nueva reserva / nuevo servicio) ---------- */
+
+.crm-modal {
+  width: min(480px, 100%);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  border-radius: var(--r-panel);
+  background: var(--card);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.35);
+  transform: translateY(12px) scale(0.99);
+  transition: transform 0.4s var(--ease);
+}
+.overlay.open .crm-modal { transform: none; }
+
+.crm-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s5) var(--s5) var(--s4);
+  border-bottom: 1px solid var(--card-line);
+}
+
+.crm-modal-head h3 { margin: 0; font-family: var(--serif); font-size: 22px; font-weight: 700; color: var(--ink); }
+.crm-modal-body { padding: var(--s5); }
+.crm-modal .field select {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: var(--r-btn);
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 14px;
+  transition: border-color 0.25s var(--ease);
+}
+.crm-modal .field select:focus { outline: none; border-color: var(--wine); }
+.crm-modal-actions { display: flex; justify-content: flex-end; gap: var(--s3); margin-top: var(--s2); }

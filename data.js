@@ -139,6 +139,7 @@ function buildSeedBookings() {
 }
 
 const STORE_KEY = 'noble_bookings';
+const SERVICES_KEY = 'noble_custom_services';
 const SESSION_KEY = 'noble_session';
 
 let seedCache = null;
@@ -156,6 +157,21 @@ const Store = {
   save(bookings) {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(bookings));
+    } catch {
+      /* Modo privado o almacenamiento lleno: la demo sigue en memoria. */
+    }
+  },
+  services() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(SERVICES_KEY));
+      return Array.isArray(raw) ? raw : [];
+    } catch {
+      return [];
+    }
+  },
+  saveServices(services) {
+    try {
+      localStorage.setItem(SERVICES_KEY, JSON.stringify(services));
     } catch {
       /* Modo privado o almacenamiento lleno: la demo sigue en memoria. */
     }
@@ -183,7 +199,8 @@ const Store = {
   }
 };
 
-const getService = id => SERVICES.find(s => s.id === id);
+const allServices = () => SERVICES.concat(Store.services());
+const getService = id => allServices().find(s => s.id === id);
 const getBarber = id => BARBERS.find(b => b.id === id);
 const money = n => '$' + Number(n).toFixed(0);
 const initialsOf = name => name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();

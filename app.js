@@ -59,7 +59,7 @@ function leastBusyBarber(date) {
 /* ---------- Render del sitio público ---------- */
 
 function renderServices() {
-  $('#serviceList').innerHTML = SERVICES.map(s => `
+  $('#serviceList').innerHTML = allServices().map(s => `
     <button class="service-row reveal" data-book-service="${s.id}">
       <span class="service-main">
         <span class="service-name">${s.name}</span>
@@ -133,7 +133,7 @@ function renderNextSlot() {
 /* ---------- Reserva: render de pasos ---------- */
 
 function renderStepServices() {
-  $('#stepServices').innerHTML = SERVICES.map(s => `
+  $('#stepServices').innerHTML = allServices().map(s => `
     <button class="option ${flow.service === s.id ? 'selected' : ''}" data-pick-service="${s.id}">
       <span class="option-main">
         <strong>${s.name}</strong>

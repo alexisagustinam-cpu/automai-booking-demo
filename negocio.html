@@ -118,6 +118,19 @@
     </main>
   </div>
 
+  <!-- Modal genérico del panel: nueva reserva / nuevo servicio -->
+  <div class="overlay" id="crmOverlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="crm-modal">
+      <div class="crm-modal-head">
+        <h3 id="crmModalTitle"></h3>
+        <button class="icon-btn" type="button" data-action="close-crm-modal" aria-label="Cerrar">
+          <i class="ph-light ph-x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="crm-modal-body" id="crmModalBody"></div>
+    </div>
+  </div>
+
   <script src="data.js" defer></script>
   <script src="crm.js" defer></script>
 </body>

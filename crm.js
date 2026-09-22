@@ -165,15 +165,23 @@ function openSection(id) {
   $$('#sideNav button').forEach(b => b.classList.toggle('active', b.dataset.section === id));
   $('#sectionTitle').textContent = section.label;
   $('#sectionSub').textContent = SECTION_SUBTITLES[id] || '';
+  SECTION_RENDERERS[id]();
+}
 
-  const renderers = {
-    resumen: renderResumen,
-    midia: renderMiDia,
-    agenda: renderAgenda,
-    clientes: renderClientes,
-    servicios: renderServicios
-  };
-  renderers[id]();
+/* Se referencia antes de declarar las funciones renderX: como son
+   function declarations quedan izadas, así que esto funciona igual. */
+const SECTION_RENDERERS = {
+  resumen: renderResumen,
+  midia: renderMiDia,
+  agenda: renderAgenda,
+  clientes: renderClientes,
+  servicios: renderServicios
+};
+
+/* Vuelve a pintar la sección activa sin resetear su estado interno
+   (por ejemplo, el día que se está viendo en la Agenda). */
+function refreshActiveSection() {
+  if (activeSection && SECTION_RENDERERS[activeSection]) SECTION_RENDERERS[activeSection]();
 }
 
 function renderDenied(section) {
@@ -573,7 +581,7 @@ function renderServicios() {
 
   $('#panelBody').innerHTML = `
     <div class="services-admin">
-      ${SERVICES.map(s => {
+      ${allServices().map(s => {
         const timesBooked = bookings.filter(b => b.service === s.id).length;
         return `
           <div class="service-admin-row">
@@ -589,6 +597,237 @@ function renderServicios() {
       }).join('')}
     </div>
   `;
+}
+
+/* ---------- Modal del panel ---------- */
+
+function openCrmModal(title, bodyHTML) {
+  $('#crmModalTitle').textContent = title;
+  $('#crmModalBody').innerHTML = bodyHTML;
+  const overlay = $('#crmOverlay');
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCrmModal() {
+  const overlay = $('#crmOverlay');
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function setCrmFieldError(field, message) {
+  const node = $(`#crmModalBody [data-error-for="${field}"]`);
+  if (node) node.textContent = message;
+  const input = $(`#crmModalBody [name="${field}"]`);
+  if (input) input.closest('.field').classList.toggle('invalid', Boolean(message));
+}
+
+/* ---------- Nueva reserva ---------- */
+
+function fillNewBookingTimes() {
+  const date = $('#nbDate').value;
+  const barber = $('#nbBarber').value;
+  const taken = new Set(
+    Store.bookings()
+      .filter(b => b.date === date && b.barber === barber)
+      .map(b => b.time)
+  );
+  const free = slotsForDate(date).filter(t => !taken.has(t));
+  const sel = $('#nbTime');
+  sel.innerHTML = free.length
+    ? free.map(t => `<option value="${t}">${t}</option>`).join('')
+    : `<option value="">Sin turnos libres ese día</option>`;
+}
+
+function openNewBooking() {
+  const lockedBarber = session.role === 'barbero' ? session.barberId : '';
+  const barberScope = BARBERS.filter(b => !lockedBarber || b.id === lockedBarber);
+  const today = dateISO(0);
+
+  openCrmModal('Nueva reserva', `
+    <form id="newBookingForm" class="form" novalidate>
+      <div class="field full">
+        <label for="nbName">Nombre del cliente</label>
+        <input id="nbName" name="name" placeholder="Andrés Pérez" autocomplete="off">
+        <span class="field-error" data-error-for="name"></span>
+      </div>
+      <div class="field">
+        <label for="nbPhone">WhatsApp</label>
+        <input id="nbPhone" name="phone" placeholder="09 9999 9999" inputmode="tel">
+        <span class="field-error" data-error-for="phone"></span>
+      </div>
+      <div class="field">
+        <label for="nbEmail">Correo <small>(opcional)</small></label>
+        <input id="nbEmail" name="email" type="email" placeholder="correo@ejemplo.com">
+        <span class="field-error" data-error-for="email"></span>
+      </div>
+      <div class="field">
+        <label for="nbService">Servicio</label>
+        <select id="nbService" name="service">
+          ${allServices().map(s => `<option value="${s.id}">${s.name} · ${money(s.price)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label for="nbBarber">Profesional</label>
+        <select id="nbBarber" name="barber">
+          ${barberScope.map(b => `<option value="${b.id}">${b.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label for="nbDate">Fecha</label>
+        <input id="nbDate" name="date" type="date" min="${today}" value="${today}">
+      </div>
+      <div class="field">
+        <label for="nbTime">Hora</label>
+        <select id="nbTime" name="time"></select>
+        <span class="field-error" data-error-for="time"></span>
+      </div>
+      <div class="crm-modal-actions field full">
+        <button type="button" class="btn btn-quiet" data-action="close-crm-modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Crear reserva <i class="ph-light ph-arrow-right" aria-hidden="true"></i></button>
+      </div>
+    </form>
+  `);
+
+  fillNewBookingTimes();
+  $('#nbDate').addEventListener('change', fillNewBookingTimes);
+  $('#nbBarber').addEventListener('change', fillNewBookingTimes);
+  $('#newBookingForm').addEventListener('submit', handleNewBooking);
+}
+
+function handleNewBooking(event) {
+  event.preventDefault();
+  const data = Object.fromEntries(new FormData(event.target));
+  ['name', 'phone', 'email', 'time'].forEach(f => setCrmFieldError(f, ''));
+
+  const errors = [];
+  if (!data.name.trim() || data.name.trim().length < 3) {
+    setCrmFieldError('name', 'Escribe el nombre completo');
+    errors.push('name');
+  }
+  const digits = data.phone.replace(/\D/g, '');
+  if (digits.length < 9) {
+    setCrmFieldError('phone', 'Revisa el número, faltan dígitos');
+    errors.push('phone');
+  }
+  if (data.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email.trim())) {
+    setCrmFieldError('email', 'Ese correo no parece válido');
+    errors.push('email');
+  }
+  if (!data.time) {
+    setCrmFieldError('time', 'No hay turnos libres ese día');
+    errors.push('time');
+  }
+  if (errors.length) return;
+
+  const bookings = Store.bookings();
+  const clash = bookings.some(b => b.date === data.date && b.time === data.time && b.barber === data.barber);
+  if (clash) {
+    setCrmFieldError('time', 'Ese turno se acaba de ocupar, elige otro');
+    fillNewBookingTimes();
+    return;
+  }
+
+  bookings.push({
+    id: 'c' + Date.now(),
+    name: data.name.trim(),
+    phone: data.phone.trim(),
+    email: data.email.trim(),
+    note: '',
+    service: data.service,
+    barber: data.barber,
+    date: data.date,
+    time: data.time,
+    status: 'Confirmada',
+    createdAt: new Date().toISOString()
+  });
+  Store.save(bookings);
+
+  closeCrmModal();
+  toast('Reserva creada', 'ph-check-circle');
+  refreshActiveSection();
+}
+
+/* ---------- Nuevo servicio ---------- */
+
+function openNewService() {
+  openCrmModal('Nuevo servicio', `
+    <form id="newServiceForm" class="form" novalidate>
+      <div class="field full">
+        <label for="nsName">Nombre</label>
+        <input id="nsName" name="name" placeholder="Hot Towel Shave" autocomplete="off">
+        <span class="field-error" data-error-for="name"></span>
+      </div>
+      <div class="field full">
+        <label for="nsDesc">Descripción <small>(opcional)</small></label>
+        <input id="nsDesc" name="desc" placeholder="Afeitado clásico con toalla caliente.">
+      </div>
+      <div class="field">
+        <label for="nsDuration">Duración (min)</label>
+        <input id="nsDuration" name="duration" type="number" min="10" step="5" value="30">
+      </div>
+      <div class="field">
+        <label for="nsPrice">Precio (USD)</label>
+        <input id="nsPrice" name="price" type="number" min="1" step="1" value="10">
+      </div>
+      <div class="crm-modal-actions field full">
+        <button type="button" class="btn btn-quiet" data-action="close-crm-modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar servicio <i class="ph-light ph-arrow-right" aria-hidden="true"></i></button>
+      </div>
+    </form>
+  `);
+
+  $('#newServiceForm').addEventListener('submit', handleNewService);
+}
+
+function handleNewService(event) {
+  event.preventDefault();
+  const data = Object.fromEntries(new FormData(event.target));
+  setCrmFieldError('name', '');
+
+  if (!data.name.trim()) {
+    setCrmFieldError('name', 'Escribe un nombre');
+    return;
+  }
+
+  const services = Store.services();
+  services.push({
+    id: 'svc' + Date.now(),
+    name: data.name.trim(),
+    desc: data.desc.trim() || 'Servicio agregado desde el panel.',
+    duration: Math.max(10, Number(data.duration) || 30),
+    price: Math.max(1, Number(data.price) || 10)
+  });
+  Store.saveServices(services);
+
+  closeCrmModal();
+  toast('Servicio agregado', 'ph-check-circle');
+  refreshActiveSection();
+}
+
+/* ---------- Exportar clientes ---------- */
+
+function exportClientsCsv() {
+  const clients = clientsFrom(Store.bookings());
+  const header = ['Nombre', 'Teléfono', 'Correo', 'Última visita', 'Visitas', 'Gasto', 'Estado'];
+  const rows = clients.map(c => [c.name, c.phone, c.email || '', c.last, c.visits, c.spent, c.status]);
+
+  const csv = [header, ...rows]
+    .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `noble-clientes-${dateISO(0)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  toast('CSV descargado', 'ph-check-circle');
 }
 
 function emptyState(title, text) {
@@ -635,9 +874,15 @@ function init() {
       openSection(target.dataset.section);
       return;
     }
-    if (event.target.closest('#newBooking, #newService, #exportBtn')) {
-      toast('Acción disponible en la versión de producción', 'ph-info');
-    }
+    if (event.target.closest('#newBooking')) { openNewBooking(); return; }
+    if (event.target.closest('#newService')) { openNewService(); return; }
+    if (event.target.closest('#exportBtn')) { exportClientsCsv(); return; }
+    if (event.target.closest('[data-action="close-crm-modal"]')) { closeCrmModal(); return; }
+    if (event.target === $('#crmOverlay')) closeCrmModal();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && $('#crmOverlay').classList.contains('open')) closeCrmModal();
   });
 
   const saved = Store.session();
